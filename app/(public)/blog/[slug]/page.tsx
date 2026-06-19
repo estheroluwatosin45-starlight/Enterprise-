@@ -1,0 +1,75 @@
+'use client';
+
+import Image from 'next/image';
+import Link from 'next/link';
+import { use } from 'react';
+import { Clock, ArrowLeft } from 'lucide-react';
+import { useAdminStore } from '@/store/adminStore';
+import { notFound } from 'next/navigation';
+
+export default function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = use(params);
+  const posts = useAdminStore((state) => state.posts);
+  const post = posts.find((p) => p.id === slug);
+
+  if (!post) {
+    return notFound();
+  }
+  
+  const readTime = post.readTime || '5 min read';
+
+  return (
+    <article className="w-full min-h-screen">
+      {/* Hero */}
+      <div className="w-full relative overflow-hidden bg-slate-950 dark:bg-black text-white pt-32 pb-48">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+          <div>
+            <Link href="/blog" className="inline-flex items-center gap-2 text-slate-300 hover:text-white transition-colors mb-8 text-sm font-medium">
+              <ArrowLeft className="w-4 h-4" /> Back to Articles
+            </Link>
+          </div>
+          <div className="mb-6 flex items-center justify-center gap-4 text-sm font-medium">
+            <span className="bg-primary-500/20 text-primary-300 px-3 py-1 rounded-full border border-primary-500/30">{post.category}</span>
+            <span className="flex items-center gap-1 text-slate-300"><Clock className="w-4 h-4" /> {readTime}</span>
+          </div>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold tracking-tight mb-8">
+            {post.title}
+          </h1>
+          <p className="text-xl text-slate-300 max-w-2xl mx-auto mb-10 leading-relaxed">
+            {post.excerpt}
+          </p>
+          <div className="flex items-center justify-center gap-4">
+            <div className="w-12 h-12 rounded-full bg-primary-600 flex items-center justify-center text-lg font-bold">
+              {post.author.charAt(0)}
+            </div>
+            <div className="text-left">
+              <p className="font-medium text-white">{post.author}</p>
+              <p className="text-sm text-slate-400">{post.date}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Featured Image */}
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 -mt-32 relative z-20 mb-16">
+        <div className="w-full h-[400px] md:h-[600px] relative rounded-3xl overflow-hidden shadow-2xl glass-panel border dark:border-slate-800 bg-slate-100 dark:bg-slate-800">
+          <Image 
+            src={post.image || `https://picsum.photos/seed/${post.id}/1920/1080`}
+            alt={post.title}
+            fill
+            className="object-cover"
+            priority
+            referrerPolicy="no-referrer"
+          />
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
+        <div className="prose prose-lg dark:prose-invert prose-slate prose-headings:font-display prose-headings:font-bold prose-a:text-primary-600 dark:prose-a:text-primary-400 max-w-none mb-16">
+          <div dangerouslySetInnerHTML={{ __html: post.content }} />
+        </div>
+      </div>
+    </article>
+  );
+}

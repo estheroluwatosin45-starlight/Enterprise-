@@ -1,0 +1,6 @@
+{
+  "name": "Enterprise Blog CMS",
+  "description": "A high-performance, enterprise-grade Blog Content Management System built with Next.js, Supabase, and Tailwind CSS. Features role-based access, TipTap rich text, and glassmorphism design.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
