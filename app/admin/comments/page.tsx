@@ -8,6 +8,7 @@ export default function AdminCommentsPage() {
   const comments = useAdminStore((state) => state.comments);
   const updateCommentStatus = useAdminStore((state) => state.updateCommentStatus);
   const deleteComment = useAdminStore((state) => state.deleteComment);
+  const currentUserRole = useAdminStore((state) => state.currentUserRole);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('All Status');
@@ -90,23 +91,29 @@ export default function AdminCommentsPage() {
                     {comment.text}
                   </p>
                   <div className="flex items-center gap-2">
-                    {comment.status !== 'Approved' && (
-                      <button onClick={() => updateCommentStatus(comment.id, 'Approved')} className="text-xs flex items-center gap-1 font-medium text-emerald-600 hover:bg-emerald-50 px-2 py-1 rounded transition-colors">
-                        <Check className="w-3 h-3" /> Approve
-                      </button>
+                    {currentUserRole !== 'Author' ? (
+                      <>
+                        {comment.status !== 'Approved' && (
+                          <button onClick={() => updateCommentStatus(comment.id, 'Approved')} className="text-xs flex items-center gap-1 font-medium text-emerald-600 hover:bg-emerald-50 px-2 py-1 rounded transition-colors">
+                            <Check className="w-3 h-3" /> Approve
+                          </button>
+                        )}
+                        {comment.status !== 'Spam' && (
+                          <button onClick={() => updateCommentStatus(comment.id, 'Spam')} className="text-xs flex items-center gap-1 font-medium text-amber-600 hover:bg-amber-50 px-2 py-1 rounded transition-colors">
+                            <X className="w-3 h-3" /> Mark Spam
+                          </button>
+                        )}
+                        <button 
+                          onClick={() => deleteComment(comment.id)}
+                          className="text-xs flex items-center gap-1 font-medium text-red-600 hover:bg-red-50 px-2 py-1 rounded transition-colors ml-auto"
+                          title="Delete Comment"
+                        >
+                          <Trash2 className="w-3 h-3" /> Delete
+                        </button>
+                      </>
+                    ) : (
+                      <span className="text-xs text-slate-400 italic">Moderation restricted</span>
                     )}
-                    {comment.status !== 'Spam' && (
-                      <button onClick={() => updateCommentStatus(comment.id, 'Spam')} className="text-xs flex items-center gap-1 font-medium text-amber-600 hover:bg-amber-50 px-2 py-1 rounded transition-colors">
-                        <X className="w-3 h-3" /> Mark Spam
-                      </button>
-                    )}
-                    <button 
-                      onClick={() => deleteComment(comment.id)}
-                      className="text-xs flex items-center gap-1 font-medium text-red-600 hover:bg-red-50 px-2 py-1 rounded transition-colors ml-auto"
-                      title="Delete Comment"
-                    >
-                      <Trash2 className="w-3 h-3" /> Delete
-                    </button>
                   </div>
                 </div>
               </div>

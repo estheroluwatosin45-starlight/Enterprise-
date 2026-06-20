@@ -169,7 +169,11 @@ export default function AdminUsersPage() {
                   <td className="px-6 py-4 font-medium text-slate-900">{user.role}</td>
                   <td className="px-6 py-4">{user.articles}</td>
                   <td className="px-6 py-4">
-                    <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${user.status === 'Active' ? 'bg-emerald-100/80 text-emerald-700' : 'bg-amber-100/80 text-amber-700'}`}>
+                    <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${
+                      user.status === 'Active' ? 'bg-emerald-100/80 text-emerald-700' : 
+                      user.status === 'Blocked' ? 'bg-red-100/80 text-red-700' :
+                      'bg-amber-100/80 text-amber-700'
+                    }`}>
                       {user.status}
                     </span>
                   </td>
@@ -214,6 +218,34 @@ export default function AdminUsersPage() {
                                 {role}
                               </button>
                             ))}
+                            {user.role !== 'Super Admin' && (
+                              <>
+                                <div className="border-t border-slate-100 dark:border-slate-700 my-1"></div>
+                                <div className="px-3 py-1.5 text-xs font-semibold text-slate-400 border-b border-slate-100 dark:border-slate-700 uppercase">Account Status</div>
+                                {user.status !== 'Active' && (
+                                  <button
+                                    onClick={() => {
+                                      updateUser(user.id, { status: 'Active' });
+                                      setActiveMenuUserId(null);
+                                    }}
+                                    className="w-full text-left px-4 py-2 text-sm text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/20 transition-colors font-medium"
+                                  >
+                                    Activate Account
+                                  </button>
+                                )}
+                                {user.status !== 'Blocked' && (
+                                  <button
+                                    onClick={() => {
+                                      updateUser(user.id, { status: 'Blocked' });
+                                      setActiveMenuUserId(null);
+                                    }}
+                                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors font-medium"
+                                  >
+                                    Block Account
+                                  </button>
+                                )}
+                              </>
+                            )}
                           </div>
                         </>
                       )}

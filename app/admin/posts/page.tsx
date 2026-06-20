@@ -8,6 +8,7 @@ import { useAdminStore } from '@/store/adminStore';
 export default function AdminPostsPage() {
   const posts = useAdminStore((state) => state.posts);
   const deletePost = useAdminStore((state) => state.deletePost);
+  const currentUserRole = useAdminStore((state) => state.currentUserRole);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('All Status');
@@ -97,13 +98,15 @@ export default function AdminPostsPage() {
                   </td>
                   <td className="px-6 py-4 font-medium whitespace-nowrap">{post.date}</td>
                   <td className="px-6 py-4 text-right">
-                    <button 
-                      onClick={() => deletePost(post.id)}
-                      className="p-2 text-slate-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors"
-                      title="Delete Post"
-                    >
-                      <Trash2 className="w-5 h-5" />
-                    </button>
+                    {(currentUserRole === 'Super Admin' || currentUserRole === 'Chief Editor') && (
+                      <button 
+                        onClick={() => deletePost(post.id)}
+                        className="p-2 text-slate-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors"
+                        title="Delete Post"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    )}
                     <Link 
                       href={`/admin/posts/${post.id}`}
                       className="p-2 text-slate-400 hover:text-primary-600 rounded-lg hover:bg-white/50 transition-colors inline-block"

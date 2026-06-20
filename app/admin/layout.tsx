@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, FileText, Image as ImageIcon, Users, Settings, Tag, MessageSquare, LogOut, Edit3, BarChart } from 'lucide-react';
+import { LayoutDashboard, FileText, Image as ImageIcon, Users, Settings, Tag, MessageSquare, LogOut, Edit3, BarChart, ShieldAlert } from 'lucide-react';
 import { useAdminStore } from '@/store/adminStore';
 import { Logo } from '@/components/ui/Logo';
 
@@ -18,6 +18,24 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const logout = useAdminStore((state) => state.logout);
   const currentUserRole = useAdminStore((state) => state.currentUserRole);
   const setCurrentUserRole = useAdminStore((state) => state.setCurrentUserRole);
+  const users = useAdminStore((state) => state.users);
+
+  const roleInitials: Record<string, string> = {
+    'Super Admin': 'SA',
+    'Chief Editor': 'CE',
+    'Editor': 'ED',
+    'Author': 'AU',
+  };
+
+  const roleBadgeStyles: Record<string, string> = {
+    'Super Admin': 'bg-purple-100 text-purple-700 border-purple-200 dark:bg-purple-950/35 dark:text-purple-300 dark:border-purple-800/40',
+    'Chief Editor': 'bg-indigo-100 text-indigo-700 border-indigo-200 dark:bg-indigo-950/35 dark:text-indigo-300 dark:border-indigo-800/40',
+    'Editor': 'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-950/35 dark:text-blue-300 dark:border-blue-800/40',
+    'Author': 'bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-950/35 dark:text-emerald-300 dark:border-emerald-800/40',
+  };
+
+  const getInitials = (role: string) => roleInitials[role] || 'U';
+  const getBadgeStyle = (role: string) => roleBadgeStyles[role] || 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-750';
   
   useEffect(() => {
     setMounted(true);
@@ -65,6 +83,45 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   if (pathname === '/admin/login') {
     return <>{children}</>;
+  }
+
+  const isRoleBlocked = users.some(u => u.role === currentUserRole && u.status === 'Blocked');
+
+  if (isRoleBlocked) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 dark:bg-slate-950 p-6">
+        <div className="glass p-8 rounded-2xl max-w-md w-full border border-red-200 dark:border-red-900/50 shadow-xl text-center space-y-6">
+          <div className="w-16 h-16 bg-red-100 dark:bg-red-950/50 text-red-600 dark:text-red-400 rounded-2xl flex items-center justify-center mx-auto border border-red-200 dark:border-red-900/30 animate-pulse">
+            <ShieldAlert className="w-8 h-8" />
+          </div>
+          <div className="space-y-2">
+            <h2 className="text-2xl font-bold font-display text-slate-900 dark:text-white">Account Suspended</h2>
+            <p className="text-slate-500 dark:text-slate-400 text-sm">
+              Your simulated role <span className="font-semibold text-slate-700 dark:text-slate-300">{currentUserRole}</span> has been blocked by the Super Admin.
+            </p>
+          </div>
+          <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex flex-col gap-3">
+            <button
+              onClick={() => setCurrentUserRole('Super Admin')}
+              className="w-full bg-primary-600 hover:bg-primary-700 text-white py-2.5 rounded-xl font-medium transition-all hover:scale-[1.02] active:scale-[0.98] duration-200 shadow-sm"
+            >
+              Switch to Super Admin
+            </button>
+            <button
+              onClick={() => {
+                router.push('/');
+                setTimeout(() => {
+                  logout();
+                }, 100);
+              }}
+              className="w-full text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 py-2.5 rounded-xl font-medium transition-colors"
+            >
+              Sign Out
+            </button>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -130,18 +187,20 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         
         <div className="p-4 border-t border-slate-200/50 bg-white/40">
           <div className="flex items-center gap-3 mb-4 px-2">
-            <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold border ${currentUserRole === 'Super Admin' ? 'bg-purple-100 text-purple-700 border-purple-200' : 'bg-emerald-100 text-emerald-700 border-emerald-200'}`}>
-              {currentUserRole === 'Super Admin' ? 'SA' : 'AU'}
+            <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold border transition-colors shrink-0 ${getBadgeStyle(currentUserRole)}`}>
+              {getInitials(currentUserRole)}
             </div>
-            <div className="flex-1">
-              <p className="text-sm font-bold text-slate-800">{currentUserRole}</p>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-bold text-slate-800 dark:text-white truncate">{currentUserRole}</p>
               <select 
                 value={currentUserRole}
                 onChange={(e) => setCurrentUserRole(e.target.value)}
-                className="text-xs text-slate-500 bg-transparent outline-none w-full cursor-pointer hover:text-slate-800"
+                className="text-xs text-slate-500 bg-transparent outline-none w-full cursor-pointer hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200"
               >
-                <option value="Super Admin">Super Admin</option>
-                <option value="Author">Author</option>
+                <option value="Super Admin" className="bg-white text-slate-900 dark:bg-slate-800 dark:text-white">Super Admin</option>
+                <option value="Chief Editor" className="bg-white text-slate-900 dark:bg-slate-800 dark:text-white">Chief Editor</option>
+                <option value="Editor" className="bg-white text-slate-900 dark:bg-slate-800 dark:text-white">Editor</option>
+                <option value="Author" className="bg-white text-slate-900 dark:bg-slate-800 dark:text-white">Author</option>
               </select>
             </div>
           </div>

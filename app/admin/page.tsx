@@ -9,6 +9,7 @@ export default function AdminDashboardPage() {
   const users = useAdminStore((state) => state.users);
   const comments = useAdminStore((state) => state.comments);
   const updatePost = useAdminStore((state) => state.updatePost);
+  const currentUserRole = useAdminStore((state) => state.currentUserRole);
 
   const stats = [
     { label: 'Total Posts', value: posts.length.toString(), icon: <FileText className="w-6 h-6" />, change: posts.length ? '+12%' : '0%', trend: 'up' },
@@ -98,18 +99,24 @@ export default function AdminDashboardPage() {
                   <h4 className="text-sm font-bold text-slate-900 mb-1 line-clamp-1">{post.title}</h4>
                   <p className="text-xs text-slate-500 mb-2">Submitted recently by {post.author}</p>
                   <div className="flex gap-2">
-                    <button 
-                      onClick={() => updatePost(post.id, { status: 'Published' })}
-                      className="text-xs font-medium text-emerald-600 hover:underline"
-                    >
-                      Approve
-                    </button>
-                    <button 
-                      onClick={() => updatePost(post.id, { status: 'Draft' })}
-                      className="text-xs font-medium text-red-600 hover:underline"
-                    >
-                      Reject
-                    </button>
+                    {currentUserRole === 'Super Admin' || currentUserRole === 'Chief Editor' ? (
+                      <>
+                        <button 
+                          onClick={() => updatePost(post.id, { status: 'Published' })}
+                          className="text-xs font-medium text-emerald-600 hover:underline"
+                        >
+                          Approve
+                        </button>
+                        <button 
+                          onClick={() => updatePost(post.id, { status: 'Draft' })}
+                          className="text-xs font-medium text-red-600 hover:underline"
+                        >
+                          Reject
+                        </button>
+                      </>
+                    ) : (
+                      <span className="text-xs text-slate-400 italic">Awaiting Admin approval</span>
+                    )}
                   </div>
                 </div>
               </div>
