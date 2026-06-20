@@ -61,6 +61,16 @@ export interface SiteSettings {
   ogGuidelines: string;
 }
 
+export interface Notification {
+  id: string;
+  type: string;
+  title: string;
+  message: string;
+  date: string;
+  read: boolean;
+  postId?: string;
+}
+
 interface AdminState {
   posts: Post[];
   users: User[];
@@ -70,8 +80,9 @@ interface AdminState {
   isAuthenticated: boolean;
   currentUserRole: string;
   settings: SiteSettings;
+  notifications: Notification[];
 
-  addPost: (post: Omit<Post, 'id' | 'date'> & { date?: string }) => void;
+  addPost: (post: Omit<Post, 'id' | 'date'> & { id?: string, date?: string }) => void;
   updatePost: (id: string, post: Partial<Post>) => void;
   deletePost: (id: string) => void;
   addUser: (user: Omit<User, 'id'>) => void;
@@ -90,6 +101,9 @@ interface AdminState {
   clearData: () => void;
   setCurrentUserRole: (role: string) => void;
   updateSettings: (settings: Partial<SiteSettings>) => void;
+  addNotification: (notification: Omit<Notification, 'id' | 'date' | 'read'>) => void;
+  markNotificationRead: (id: string) => void;
+  clearAllNotifications: () => void;
 }
 
 // Initial seed data helper
@@ -103,6 +117,7 @@ const getInitialState = () => {
   const seedPosts: Post[] = [];
   const seedMedia: MediaItem[] = [];
   const seedComments: Comment[] = [];
+  const seedNotifications: Notification[] = [];
   const seedSettings: SiteSettings = {
     siteName: 'Enterprise CMS',
     supportEmail: 'support@enterprisecms.com',
@@ -118,6 +133,7 @@ const getInitialState = () => {
     media: seedMedia,
     comments: seedComments,
     settings: seedSettings,
+    notifications: seedNotifications,
   };
 };
 
@@ -134,12 +150,13 @@ export const useAdminStore = create<AdminState>()(
       isAuthenticated: false,
       currentUserRole: 'Super Admin',
       settings: initialData.settings,
+      notifications: initialData.notifications,
 
       addPost: (post) => set((state) => ({
         posts: [
           {
             ...post,
-            id: Math.random().toString(36).substr(2, 9),
+            id: post.id || Math.random().toString(36).substr(2, 9),
             date: post.date || new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
           },
           ...state.posts,
@@ -224,6 +241,21 @@ export const useAdminStore = create<AdminState>()(
       updateSettings: (newSettings) => set((state) => ({
         settings: { ...state.settings, ...newSettings }
       })),
+      addNotification: (notification) => set((state) => ({
+        notifications: [
+          {
+            ...notification,
+            id: Math.random().toString(36).substr(2, 9),
+            date: new Date().toISOString(),
+            read: false,
+          },
+          ...(state.notifications || []),
+        ]
+      })),
+      markNotificationRead: (id) => set((state) => ({
+        notifications: (state.notifications || []).map(n => n.id === id ? { ...n, read: true } : n)
+      })),
+      clearAllNotifications: () => set({ notifications: [] }),
     }),
     {
       name: 'enterprise-cms-storage-v4',

@@ -267,15 +267,15 @@ export default function AdminUsersPage() {
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setShowModal(false)}></div>
-          <div className="bg-white dark:bg-slate-950 rounded-2xl w-full max-w-md relative z-10 shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-800">
-            <div className="flex items-center justify-between p-6 border-b border-slate-100 dark:border-slate-850">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-md relative z-10 shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-800">
+            <div className="flex items-center justify-between p-6 border-b border-slate-100 dark:border-slate-800">
               <h2 className="text-xl font-bold font-display text-slate-900 dark:text-white flex items-center gap-2">
-                <UserPlus className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                <UserPlus className="w-5 h-5 text-primary-600 dark:text-primary-400" />
                 Invite Team Member
               </h2>
               <button 
                 onClick={() => setShowModal(false)}
-                className="text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-350 transition-colors"
+                className="text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300 transition-colors"
                 title="Close"
               >
                 <X className="w-5 h-5" />
@@ -290,7 +290,7 @@ export default function AdminUsersPage() {
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
                   placeholder="Jane Doe"
-                  className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-slate-900 dark:text-white font-medium placeholder-slate-400"
+                  className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/50 text-slate-900 dark:text-white font-medium placeholder-slate-400 transition-shadow"
                   required
                 />
               </div>
@@ -302,7 +302,7 @@ export default function AdminUsersPage() {
                   value={newEmail}
                   onChange={(e) => setNewEmail(e.target.value)}
                   placeholder="jane@example.com"
-                  className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-slate-900 dark:text-white font-medium placeholder-slate-400"
+                  className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/50 text-slate-900 dark:text-white font-medium placeholder-slate-400 transition-shadow"
                   required
                 />
               </div>
@@ -312,7 +312,7 @@ export default function AdminUsersPage() {
                 <select 
                   value={newRole}
                   onChange={(e) => setNewRole(e.target.value)}
-                  className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-slate-900 dark:text-white font-medium"
+                  className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/50 text-slate-900 dark:text-white font-medium transition-shadow"
                 >
                   <option value="Super Admin" className="bg-white text-slate-900 dark:bg-slate-900 dark:text-white">Super Admin</option>
                   <option value="Chief Editor" className="bg-white text-slate-900 dark:bg-slate-900 dark:text-white">Chief Editor</option>
@@ -321,17 +321,17 @@ export default function AdminUsersPage() {
                 </select>
               </div>
 
-              <div className="pt-4 border-t border-slate-100 dark:border-slate-850 flex justify-end gap-3">
+              <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex justify-end gap-3">
                 <button 
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 text-slate-600 dark:text-slate-400 font-semibold hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors rounded-lg text-sm"
+                  className="px-4 py-2 text-slate-600 dark:text-slate-400 font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors rounded-lg text-sm"
                 >
                   Cancel
                 </button>
                 <button 
                   type="submit"
-                  className="bg-purple-650 hover:bg-purple-700 text-white px-5 py-2 rounded-lg font-semibold transition-colors shadow-sm text-sm cursor-pointer"
+                  className="bg-primary-600 hover:bg-primary-700 text-white px-5 py-2 rounded-lg font-semibold transition-colors shadow-sm text-sm cursor-pointer"
                 >
                   Send Invite
                 </button>

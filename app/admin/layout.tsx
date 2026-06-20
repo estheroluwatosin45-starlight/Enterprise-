@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, FileText, Image as ImageIcon, Users, Settings, Tag, MessageSquare, LogOut, Edit3, BarChart, ShieldAlert, Shield } from 'lucide-react';
+import { LayoutDashboard, FileText, Image as ImageIcon, Users, Settings, Tag, MessageSquare, LogOut, Edit3, BarChart, ShieldAlert, Shield, Bell, Menu, X } from 'lucide-react';
 import { useAdminStore } from '@/store/adminStore';
 import { Logo } from '@/components/ui/Logo';
 import { useTheme } from 'next-themes';
@@ -14,12 +14,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const router = useRouter();
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const isAuthenticated = useAdminStore((state) => state.isAuthenticated);
   const [hydrated, setHydrated] = useState(false);
   const logout = useAdminStore((state) => state.logout);
   const currentUserRole = useAdminStore((state) => state.currentUserRole);
   const setCurrentUserRole = useAdminStore((state) => state.setCurrentUserRole);
   const users = useAdminStore((state) => state.users);
+  const notifications = useAdminStore((state) => state.notifications) || [];
+  const unreadCount = notifications.filter(n => !n.read).length;
 
   const [isSuperAdminModalOpen, setIsSuperAdminModalOpen] = useState(false);
   const [superAdminPassword, setSuperAdminPassword] = useState('');
@@ -67,6 +70,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       }
     }
   }, [mounted, hydrated, isAuthenticated, pathname, router]);
+
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [pathname]);
 
   const isActive = (path: string) => {
     if (!pathname) return false;
@@ -210,40 +217,78 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   if (currentUserRole === 'Super Admin') {
     return (
-      <div className="flex h-screen overflow-hidden bg-slate-50/50 dark:bg-slate-900/50 text-slate-800 dark:text-white font-sans">
+      <div className="flex h-screen overflow-hidden bg-slate-50/50 dark:bg-slate-900/50 text-slate-800 dark:text-white font-sans relative">
+        {/* Backdrop for mobile */}
+        {isMobileMenuOpen && (
+          <div 
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-30 md:hidden animate-in fade-in duration-200"
+          />
+        )}
         {/* Sidebar */}
-        <aside className="w-64 glass border-r border-white/40 dark:border-slate-800 flex flex-col hidden md:flex z-20 shrink-0">
+        <aside className={`w-64 glass border-r border-white/40 dark:border-slate-800 flex flex-col shrink-0 transition-transform duration-300 z-40 ${
+          isMobileMenuOpen 
+            ? 'fixed inset-y-0 left-0 translate-x-0 bg-white dark:bg-slate-950 shadow-2xl' 
+            : 'fixed inset-y-0 left-0 -translate-x-full md:static md:translate-x-0 hidden md:flex'
+        }`}>
           <div className="h-16 flex items-center justify-between px-6 border-b border-slate-200/50 bg-white/40 dark:bg-slate-900/20">
-            <Link href="/">
+            <Link href="/" onClick={() => setIsMobileMenuOpen(false)}>
               <Logo />
             </Link>
-            <span className="text-[10px] font-bold bg-purple-100 text-purple-750 border border-purple-200 dark:bg-purple-950/40 dark:text-purple-300 dark:border-purple-900/30 px-2.5 py-0.5 rounded-full animate-pulse">Master Mode</span>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-bold bg-primary-100 text-primary-700 border border-primary-200 dark:bg-primary-950/40 dark:text-primary-300 dark:border-primary-900/30 px-2.5 py-0.5 rounded-full animate-pulse">Master Mode</span>
+              <button 
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="md:hidden p-1 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                title="Close Menu"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
           </div>
           
           <div className="flex-1 overflow-y-auto py-6">
             <nav className="space-y-1.5 px-4">
-              <Link href="/admin/superadmin" className={`flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors ${isActive('/admin/superadmin') ? 'bg-purple-500/10 text-purple-750 dark:text-purple-300 border border-purple-500/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200'}`}>
-                <Shield className="w-5 h-5 text-purple-500" />
+              <Link href="/admin/superadmin" className={`flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors ${isActive('/admin/superadmin') ? 'bg-primary-500/10 text-primary-700 dark:text-primary-300 border border-primary-500/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200'}`}>
+                <Shield className="w-5 h-5 text-primary-500" />
                 Console Home
               </Link>
-              <Link href="/admin/users" className={`flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors ${isActive('/admin/users') ? 'bg-purple-500/10 text-purple-750 dark:text-purple-300 border border-purple-500/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200'}`}>
+              <Link href="/admin/posts" className={`flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors ${isActive('/admin/posts') ? 'bg-primary-500/10 text-primary-700 dark:text-primary-300 border border-primary-500/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200'}`}>
+                <FileText className="w-5 h-5" />
+                All Articles
+              </Link>
+              <Link href="/admin/users" className={`flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors ${isActive('/admin/users') ? 'bg-primary-500/10 text-primary-700 dark:text-primary-300 border border-primary-500/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200'}`}>
                 <Users className="w-5 h-5" />
                 Team & Roles
               </Link>
-              <Link href="/admin/analytics" className={`flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors ${isActive('/admin/analytics') ? 'bg-purple-500/10 text-purple-750 dark:text-purple-300 border border-purple-500/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200'}`}>
+              <Link href="/admin/analytics" className={`flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors ${isActive('/admin/analytics') ? 'bg-primary-500/10 text-primary-700 dark:text-primary-300 border border-primary-500/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200'}`}>
                 <BarChart className="w-5 h-5" />
                 Analytics
               </Link>
-              <Link href="/admin/settings" className={`flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors ${isActive('/admin/settings') ? 'bg-purple-500/10 text-purple-750 dark:text-purple-300 border border-purple-500/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200'}`}>
+              <Link href="/admin/settings" className={`flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors ${isActive('/admin/settings') ? 'bg-primary-500/10 text-primary-700 dark:text-primary-300 border border-primary-500/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200'}`}>
                 <Settings className="w-5 h-5" />
                 System Settings
+              </Link>
+              <Link href="/admin/superadmin/notifications" className={`flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors ${isActive('/admin/superadmin/notifications') ? 'bg-primary-500/10 text-primary-700 dark:text-primary-300 border border-primary-500/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200'}`}>
+                <div className="relative flex-shrink-0">
+                  <Bell className="w-5 h-5" />
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-slate-50 dark:border-slate-900"></span>
+                  )}
+                </div>
+                Notifications
+                {unreadCount > 0 && (
+                  <span className="ml-auto bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400 py-0.5 px-2 rounded-full text-[10px] font-bold">
+                    {unreadCount}
+                  </span>
+                )}
               </Link>
             </nav>
           </div>
           
           <div className="p-4 border-t border-slate-200/50 dark:border-slate-850 bg-white/40 dark:bg-slate-900/20">
             <div className="flex items-center gap-3 mb-4 px-2">
-              <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold border bg-purple-100 text-purple-750 dark:bg-purple-950/35 dark:text-purple-300 dark:border-purple-800/40 shrink-0">
+              <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold border bg-primary-100 text-primary-700 dark:bg-primary-950/35 dark:text-primary-300 dark:border-primary-800/40 shrink-0">
                 SA
               </div>
               <div className="flex-1 min-w-0">
@@ -254,14 +299,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             
             <button 
               onClick={() => {
-                if (confirm('Exit Super Admin Mode? You will return to standard editor dashboard.')) {
-                  setCurrentUserRole('Editor');
-                  router.push('/admin');
-                }
+                setCurrentUserRole('Editor');
+                router.push('/admin');
               }}
-              className="flex items-center justify-center gap-2 w-full px-3 py-2.5 text-xs font-semibold bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 dark:bg-purple-950/20 dark:text-purple-400 dark:border-purple-900/30 rounded-xl transition-all mb-2"
+              className="flex items-center justify-center gap-2 w-full px-3 py-2.5 text-xs font-semibold bg-primary-50 hover:bg-primary-100 text-primary-700 border border-primary-200 dark:bg-primary-950/20 dark:text-primary-400 dark:border-primary-900/30 rounded-xl transition-all mb-3"
             >
-              Exit Super Admin Mode
+              <LayoutDashboard className="w-4 h-4" />
+              Return to Admin
             </button>
             <button 
               onClick={() => {
@@ -281,13 +325,32 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         {/* Main content */}
         <main className="flex-1 flex flex-col h-screen overflow-hidden relative z-0">
           <header className="h-16 glass-panel border-b border-white/40 dark:border-slate-800 flex items-center justify-between px-8 z-10 shrink-0 shadow-sm">
-            <h1 className="text-xl font-bold font-display text-slate-800 dark:text-white flex items-center gap-2">
-              <Shield className="w-5 h-5 text-purple-500" />
-              Master Command Console
-            </h1>
+            <div className="flex items-center gap-3">
+              <button 
+                onClick={() => setIsMobileMenuOpen(true)}
+                className="md:hidden p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors"
+                title="Open Menu"
+              >
+                <Menu className="w-5 h-5" />
+              </button>
+              <h1 className="text-xl font-bold font-display text-slate-800 dark:text-white flex items-center gap-2">
+                <Shield className="w-5 h-5 text-primary-500" />
+                Master Command Console
+              </h1>
+            </div>
             <div className="flex items-center gap-4">
+              <button 
+                onClick={() => {
+                  setCurrentUserRole('Editor');
+                  router.push('/admin');
+                }}
+                className="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white flex items-center gap-1.5 border border-slate-200 dark:border-slate-700 px-3 py-1.5 rounded-lg bg-white/50 dark:bg-slate-800/50 mr-2"
+              >
+                <LogOut className="w-4 h-4" />
+                Exit Admin
+              </button>
               <ThemeToggle />
-              <Link href="/" className="text-sm font-medium text-purple-650 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 glass-button px-4 py-1.5 rounded-full">View Public Site</Link>
+              <Link href="/" className="text-sm font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 glass-button px-4 py-1.5 rounded-full">View Public Site</Link>
             </div>
           </header>
           
@@ -301,13 +364,31 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   // Render Standard CMS Layout (Author, Editor, Chief Editor)
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-50/50 dark:bg-slate-900/50">
+    <div className="flex h-screen overflow-hidden bg-slate-50/50 dark:bg-slate-900/50 relative">
+      {/* Backdrop for mobile */}
+      {isMobileMenuOpen && (
+        <div 
+          onClick={() => setIsMobileMenuOpen(false)}
+          className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-30 md:hidden animate-in fade-in duration-200"
+        />
+      )}
       {/* Sidebar */}
-      <aside className="w-64 glass border-r border-white/40 dark:border-slate-800 flex flex-col hidden md:flex z-20">
-        <div className="h-16 flex items-center px-6 border-b border-slate-200/50 bg-white/40">
-           <Link href="/">
+      <aside className={`w-64 glass border-r border-white/40 dark:border-slate-800 flex flex-col shrink-0 transition-transform duration-300 z-40 ${
+        isMobileMenuOpen 
+          ? 'fixed inset-y-0 left-0 translate-x-0 bg-white dark:bg-slate-950 shadow-2xl' 
+          : 'fixed inset-y-0 left-0 -translate-x-full md:static md:translate-x-0 hidden md:flex'
+      }`}>
+        <div className="h-16 flex items-center justify-between px-6 border-b border-slate-200/50 bg-white/40">
+           <Link href="/" onClick={() => setIsMobileMenuOpen(false)}>
              <Logo />
            </Link>
+           <button 
+             onClick={() => setIsMobileMenuOpen(false)}
+             className="md:hidden p-1 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+             title="Close Menu"
+           >
+             <X className="w-4 h-4" />
+           </button>
         </div>
         
         <div className="flex-1 overflow-y-auto py-6">
@@ -387,7 +468,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <main className="flex-1 flex flex-col h-screen overflow-hidden relative z-0">
         {/* Admin Header */}
         <header className="h-16 glass-panel border-b border-white/40 dark:border-slate-800 flex items-center justify-between px-8 z-10 shrink-0 shadow-sm">
-          <h1 className="text-xl font-bold font-display text-slate-800 dark:text-white">Dashboard</h1>
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={() => setIsMobileMenuOpen(true)}
+              className="md:hidden p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors"
+              title="Open Menu"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+            <h1 className="text-xl font-bold font-display text-slate-800 dark:text-white">Dashboard</h1>
+          </div>
           <div className="flex items-center gap-4">
             <ThemeToggle />
             <Link href="/" className="text-sm font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 glass-button px-4 py-1.5 rounded-full">View Public Site</Link>
@@ -396,13 +486,36 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         
         <div className="flex-1 overflow-y-auto p-6 md:p-8">
           {currentUserRole !== 'Super Admin' && pathname && (pathname.startsWith('/admin/superadmin') || pathname.startsWith('/admin/users') || pathname.startsWith('/admin/analytics') || pathname.startsWith('/admin/settings')) ? (
-            <div className="flex flex-col items-center justify-center h-full">
-              <div className="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mb-4">
-                <Settings className="w-8 h-8" />
+            <div className="flex flex-col items-center justify-center h-full max-w-md mx-auto text-center space-y-6">
+              <div className="w-16 h-16 bg-red-100 text-red-600 dark:bg-red-950/45 rounded-full flex items-center justify-center mb-2 border border-red-200 dark:border-red-900/30">
+                <Shield className="w-8 h-8 text-red-500" />
               </div>
-              <h2 className="text-2xl font-bold font-display text-slate-800 mb-2">Access Restricted</h2>
-              <p className="text-slate-500 mb-6">You need Super Admin privileges to view this area.</p>
-              <Link href="/admin" className="bg-primary-600 hover:bg-primary-700 text-white px-5 py-2.5 rounded-lg font-medium transition-colors">Return to Dashboard</Link>
+              <div className="space-y-2">
+                <h2 className="text-2xl font-bold font-display text-slate-900 dark:text-white">Access Restricted</h2>
+                <p className="text-slate-500 dark:text-slate-400 text-sm">
+                  You need Super Admin privileges to view this area.
+                </p>
+              </div>
+              <div className="pt-4 border-t border-slate-150 dark:border-slate-800 w-full flex flex-col gap-3">
+                <button
+                  onClick={() => {
+                    setOnSuccessAction(() => () => {
+                      setCurrentUserRole('Super Admin');
+                      router.push(pathname || '/admin/superadmin');
+                    });
+                    setIsSuperAdminModalOpen(true);
+                  }}
+                  className="w-full bg-red-600 hover:bg-red-700 text-white py-2.5 rounded-xl font-medium transition-all hover:scale-[1.02] active:scale-[0.98] duration-200 shadow-sm cursor-pointer"
+                >
+                  Switch to Super Admin
+                </button>
+                <Link 
+                  href="/admin" 
+                  className="w-full text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 py-2.5 rounded-xl font-medium transition-colors border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50"
+                >
+                  Return to Dashboard
+                </Link>
+              </div>
             </div>
           ) : (
             children

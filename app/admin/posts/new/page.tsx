@@ -15,6 +15,7 @@ export default function NewPostPage() {
   const currentUserRole = useAdminStore((state) => state.currentUserRole);
   const media = useAdminStore((state) => state.media);
   const addMedia = useAdminStore((state) => state.addMedia);
+  const addNotification = useAdminStore((state) => state.addNotification);
 
   const [title, setTitle] = useState('');
   const [excerpt, setExcerpt] = useState('');
@@ -61,7 +62,19 @@ export default function NewPostPage() {
       formattedDate = new Date(publishDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     }
     
+    const newPostId = Math.random().toString(36).substr(2, 9);
+    
+    if (publishStatus === 'Published' && currentUserRole !== 'Super Admin') {
+      addNotification({
+        type: 'review_post',
+        title: 'New Article Published',
+        message: `${author} has published a new article: "${title}". Please review it.`,
+        postId: newPostId
+      });
+    }
+
     addPost({
+      id: newPostId,
       title,
       excerpt,
       content,

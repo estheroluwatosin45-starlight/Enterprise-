@@ -19,6 +19,8 @@ export default function EditPostPage() {
   const users = useAdminStore((state) => state.users);
   const media = useAdminStore((state) => state.media);
   const addMedia = useAdminStore((state) => state.addMedia);
+  const addNotification = useAdminStore((state) => state.addNotification);
+  const currentUserRole = useAdminStore((state) => state.currentUserRole);
 
   const post = posts.find((p) => p.id === id);
 
@@ -74,6 +76,15 @@ export default function EditPostPage() {
       formattedDate = new Date(publishDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     }
     
+    if (publishStatus === 'Published' && currentUserRole !== 'Super Admin') {
+      addNotification({
+        type: 'review_post',
+        title: 'Edited Article Published',
+        message: `${author} has published edits to: "${title}". Please review it.`,
+        postId: id
+      });
+    }
+
     updatePost(id, {
       title,
       excerpt,
