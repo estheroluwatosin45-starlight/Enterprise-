@@ -8,12 +8,19 @@ import { useEffect, useState } from 'react';
 
 export default function Navbar() {
   const isAuthenticated = useAdminStore((state) => state.isAuthenticated);
+  const logout = useAdminStore((state) => state.logout);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (mounted && isAuthenticated) {
+      logout();
+    }
+  }, [mounted, isAuthenticated, logout]);
 
   return (
     <nav className="fixed top-0 w-full z-50 glass">

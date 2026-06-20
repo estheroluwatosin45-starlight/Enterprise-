@@ -276,6 +276,10 @@ export const useAdminStore = create<AdminState>()(
     }),
     {
       name: 'admin-storage',
+      partialize: (state) => {
+        const { isAuthenticated, ...rest } = state;
+        return rest;
+      },
     }
   )
 );
