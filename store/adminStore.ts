@@ -98,9 +98,6 @@ const getInitialState = () => {
 
   const seedUsers: User[] = [
     { id: 'u-1', name: 'Babatunde', email: 'babatunde@enterprise.com', role: 'Super Admin', articles: 0, status: 'Active', initials: 'BA' },
-    { id: 'u-2', name: 'Sarah Jenkins', email: 'sarah@enterprise.com', role: 'Chief Editor', articles: 0, status: 'Active', initials: 'SJ' },
-    { id: 'u-3', name: 'Marcus Vance', email: 'marcus@enterprise.com', role: 'Editor', articles: 0, status: 'Active', initials: 'MV' },
-    { id: 'u-4', name: 'Elena Rostova', email: 'elena@enterprise.com', role: 'Author', articles: 0, status: 'Active', initials: 'ER' },
   ];
 
   const seedPosts: Post[] = [];
@@ -229,7 +226,7 @@ export const useAdminStore = create<AdminState>()(
       })),
     }),
     {
-      name: 'enterprise-cms-storage-v3',
+      name: 'enterprise-cms-storage-v4',
       partialize: (state) => {
         const { isAuthenticated, ...rest } = state;
         return rest;
