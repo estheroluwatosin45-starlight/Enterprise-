@@ -5,8 +5,6 @@ import {
   Shield, Activity, HardDrive, Cpu, Terminal, 
   CheckCircle, RefreshCw, Layers, Database, Play
 } from 'lucide-react';
-import { useAdminStore } from '@/store/adminStore';
-
 interface AuditLog {
   id: string;
   time: string;
@@ -15,9 +13,6 @@ interface AuditLog {
 }
 
 export default function SuperAdminConsole() {
-  const users = useAdminStore((state) => state.users);
-  const posts = useAdminStore((state) => state.posts);
-  const comments = useAdminStore((state) => state.comments);
 
   // Loading states for actions
   const [optimizing, setOptimizing] = useState(false);
@@ -26,14 +21,14 @@ export default function SuperAdminConsole() {
   const [toastMessage, setToastMessage] = useState('');
 
   // Simulated Audit Logs State
-  const [logs, setLogs] = useState<AuditLog[]>([
-    { id: '1', time: '10:24:02', type: 'success', message: 'Super Admin Babatunde unlocked Master Console' },
-    { id: '2', time: '10:11:54', type: 'info', message: 'Zustand client store hydrated successfully: key enterprise-cms-storage-v3' },
-    { id: '3', time: '09:42:15', type: 'action', message: 'Chief Editor Sarah Jenkins updated status of "Future of Next.js" to Published' },
-    { id: '4', time: '08:55:30', type: 'action', message: 'Elena Rostova uploaded "modern-office.jpg" to Media Library (Base64 saved)' },
-    { id: '5', time: '07:12:08', type: 'warning', message: 'Blocked Role Switch attempt bypassed: credentials required for Super Admin' },
-    { id: '6', time: '06:00:00', type: 'success', message: 'Automated System: Daily incremental database backup completed (1.2MB)' },
-  ]);
+  const [logs, setLogs] = useState<AuditLog[]>([]);
+
+  useEffect(() => {
+    const timeString = new Date().toLocaleTimeString('en-US', { hour12: false });
+    setLogs([
+      { id: 'init', time: timeString, type: 'success', message: 'Super Admin Babatunde unlocked Master Console' }
+    ]);
+  }, []);
 
   // Handle actions
   const triggerToast = (msg: string) => {
