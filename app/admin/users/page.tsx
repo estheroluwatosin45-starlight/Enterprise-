@@ -8,16 +8,28 @@ export default function AdminUsersPage() {
   const users = useAdminStore((state) => state.users);
   const deleteUser = useAdminStore((state) => state.deleteUser);
   const addUser = useAdminStore((state) => state.addUser);
+  const updateUser = useAdminStore((state) => state.updateUser);
 
   const [showModal, setShowModal] = useState(false);
   const [newName, setNewName] = useState('');
   const [newEmail, setNewEmail] = useState('');
   const [newRole, setNewRole] = useState('Author');
 
+  const [activeMenuUserId, setActiveMenuUserId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [roleFilter, setRoleFilter] = useState('All Roles');
+
   // Derive counts
   const superAdmins = users.filter((u) => u.role === 'Super Admin').length;
   const chiefEditors = users.filter((u) => u.role === 'Chief Editor').length;
   const authorsAndEditors = users.filter((u) => u.role === 'Author' || u.role === 'Editor').length;
+
+  const filteredUsers = users.filter((u) => {
+    const matchesSearch = u.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          u.email.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesRole = roleFilter === 'All Roles' || u.role === roleFilter;
+    return matchesSearch && matchesRole;
+  });
 
   const handleAddUser = (e: React.FormEvent) => {
     e.preventDefault();
@@ -110,22 +122,28 @@ export default function AdminUsersPage() {
             </div>
             <input
               type="text"
-              className="block w-full pl-10 pr-3 py-2 text-sm border-white/40 rounded-lg leading-5 bg-white/50 backdrop-blur-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500/50 transition-shadow"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="block w-full pl-10 pr-3 py-2 text-sm border border-slate-200 rounded-lg leading-5 bg-white/50 backdrop-blur-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500/50 transition-shadow text-slate-900"
               placeholder="Search users..."
             />
           </div>
           <div className="flex gap-2 w-full md:w-auto">
-            <select className="block w-full pl-3 pr-8 py-2 text-sm border-white/40 focus:outline-none focus:ring-2 focus:ring-primary-500/50 rounded-lg bg-white/50 backdrop-blur-sm">
-              <option>All Roles</option>
-              <option>Super Admin</option>
-              <option>Chief Editor</option>
-              <option>Editor</option>
-              <option>Author</option>
+            <select
+              value={roleFilter}
+              onChange={(e) => setRoleFilter(e.target.value)}
+              className="block w-full pl-3 pr-8 py-2 text-sm border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500/50 rounded-lg bg-white/50 backdrop-blur-sm text-slate-900"
+            >
+              <option value="All Roles">All Roles</option>
+              <option value="Super Admin">Super Admin</option>
+              <option value="Chief Editor">Chief Editor</option>
+              <option value="Editor">Editor</option>
+              <option value="Author">Author</option>
             </select>
           </div>
         </div>
         
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto min-h-[350px] pb-12">
           <table className="w-full text-left text-sm text-slate-600">
             <thead className="bg-white/30 text-slate-500 uppercase font-semibold text-xs border-b border-white/40">
               <tr>
@@ -137,7 +155,7 @@ export default function AdminUsersPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-white/40">
-              {users.map((user) => (
+              {filteredUsers.map((user) => (
                 <tr key={user.id} className="hover:bg-white/40 transition-colors">
                   <td className="px-6 py-4 flex items-center gap-3">
                     <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-xs ${getColorClass(user.role)}`}>
@@ -171,13 +189,39 @@ export default function AdminUsersPage() {
                     >
                       <Trash2 className="w-5 h-5" />
                     </button>
-                    <button className="p-2 text-slate-400 hover:text-primary-600 rounded-lg hover:bg-white/50 transition-colors">
-                      <MoreVertical className="w-5 h-5" />
-                    </button>
+                    <div className="relative inline-block text-left">
+                      <button 
+                        onClick={() => setActiveMenuUserId(activeMenuUserId === user.id ? null : user.id)}
+                        className="p-2 text-slate-400 hover:text-primary-600 rounded-lg hover:bg-white/50 transition-colors"
+                        title="Change Role"
+                      >
+                        <MoreVertical className="w-5 h-5" />
+                      </button>
+                      {activeMenuUserId === user.id && (
+                        <>
+                          <div className="fixed inset-0 z-10" onClick={() => setActiveMenuUserId(null)}></div>
+                          <div className="absolute right-0 mt-2 w-48 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-lg z-20 py-1 text-left">
+                            <div className="px-3 py-1.5 text-xs font-semibold text-slate-400 border-b border-slate-100 dark:border-slate-700 uppercase">Change Role</div>
+                            {['Super Admin', 'Chief Editor', 'Editor', 'Author'].map((role) => (
+                              <button
+                                key={role}
+                                onClick={() => {
+                                  updateUser(user.id, { role });
+                                  setActiveMenuUserId(null);
+                                }}
+                                className={`w-full text-left px-4 py-2 text-sm transition-colors hover:bg-slate-50 dark:hover:bg-slate-700/50 ${user.role === role ? 'text-primary-600 font-semibold bg-primary-50/50 dark:bg-primary-950/20' : 'text-slate-700 dark:text-slate-300'}`}
+                              >
+                                {role}
+                              </button>
+                            ))}
+                          </div>
+                        </>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}
-              {users.length === 0 && (
+              {filteredUsers.length === 0 && (
                 <tr>
                   <td colSpan={5} className="px-6 py-8 text-center text-slate-500">
                     No users found.
