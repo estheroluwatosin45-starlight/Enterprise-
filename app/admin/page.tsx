@@ -1,15 +1,28 @@
 'use client';
 
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { FileText, Users, Eye, TrendingUp, TrendingDown, MessageSquare } from 'lucide-react';
 import { useAdminStore } from '@/store/adminStore';
 import Link from 'next/link';
 
 export default function AdminDashboardPage() {
+  const router = useRouter();
   const posts = useAdminStore((state) => state.posts);
   const users = useAdminStore((state) => state.users);
   const comments = useAdminStore((state) => state.comments);
   const updatePost = useAdminStore((state) => state.updatePost);
   const currentUserRole = useAdminStore((state) => state.currentUserRole);
+
+  useEffect(() => {
+    if (currentUserRole === 'Super Admin') {
+      router.replace('/admin/superadmin');
+    }
+  }, [currentUserRole, router]);
+
+  if (currentUserRole === 'Super Admin') {
+    return null;
+  }
 
   const stats = [
     { label: 'Total Posts', value: posts.length.toString(), icon: <FileText className="w-6 h-6" />, change: posts.length ? '+12%' : '0%', trend: 'up' },
