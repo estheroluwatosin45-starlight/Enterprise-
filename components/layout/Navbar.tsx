@@ -23,7 +23,7 @@ export default function Navbar() {
   }, [mounted, isAuthenticated, logout]);
 
   return (
-    <nav className="fixed top-0 w-full z-50 glass">
+    <nav className="fixed top-0 w-full z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800/80 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="h-16 flex items-center justify-between">
           <Link href="/" className="flex-shrink-0">
