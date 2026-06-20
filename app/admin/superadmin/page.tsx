@@ -164,10 +164,10 @@ export default function SuperAdminConsole() {
                               onChange={(e) => updateUser(user.id, { role: e.target.value })}
                               className="text-xs border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg px-2 py-1 outline-none text-slate-800 dark:text-white"
                             >
-                              <option value="Chief Editor">Chief Editor</option>
-                              <option value="Editor">Editor</option>
-                              <option value="Author">Author</option>
-                              <option value="Super Admin">Super Admin</option>
+                              <option value="Chief Editor" className="bg-white text-slate-900 dark:bg-slate-800 dark:text-white">Chief Editor</option>
+                              <option value="Editor" className="bg-white text-slate-900 dark:bg-slate-800 dark:text-white">Editor</option>
+                              <option value="Author" className="bg-white text-slate-900 dark:bg-slate-800 dark:text-white">Author</option>
+                              <option value="Super Admin" className="bg-white text-slate-900 dark:bg-slate-800 dark:text-white">Super Admin</option>
                             </select>
                           </>
                         )}
@@ -231,9 +231,9 @@ export default function SuperAdminConsole() {
                           onChange={(e) => updatePost(post.id, { status: e.target.value })}
                           className="text-xs border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg px-2 py-1 outline-none text-slate-800 dark:text-white"
                         >
-                          <option value="Published">Published</option>
-                          <option value="Draft">Draft</option>
-                          <option value="Pending Review">Pending Review</option>
+                          <option value="Published" className="bg-white text-slate-900 dark:bg-slate-800 dark:text-white">Published</option>
+                          <option value="Draft" className="bg-white text-slate-900 dark:bg-slate-800 dark:text-white">Draft</option>
+                          <option value="Pending Review" className="bg-white text-slate-900 dark:bg-slate-800 dark:text-white">Pending Review</option>
                         </select>
                         <button 
                           onClick={() => deletePost(post.id)}

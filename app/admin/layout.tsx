@@ -20,6 +20,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const setCurrentUserRole = useAdminStore((state) => state.setCurrentUserRole);
   const users = useAdminStore((state) => state.users);
 
+  const [isSuperAdminModalOpen, setIsSuperAdminModalOpen] = useState(false);
+  const [superAdminPassword, setSuperAdminPassword] = useState('');
+  const [superAdminError, setSuperAdminError] = useState('');
+  const [onSuccessAction, setOnSuccessAction] = useState<(() => void) | null>(null);
+
   const roleInitials: Record<string, string> = {
     'Super Admin': 'SA',
     'Chief Editor': 'CE',
@@ -87,6 +92,78 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const isRoleBlocked = users.some(u => u.role === currentUserRole && u.status === 'Blocked');
 
+  const renderSuperAdminModal = () => {
+    if (!isSuperAdminModalOpen) return null;
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-sm relative z-10 shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-800 p-6 space-y-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-red-100 dark:bg-red-950/40 text-red-600 dark:text-red-400 rounded-xl flex items-center justify-center border border-red-200/50 dark:border-red-900/30">
+              <Shield className="w-5 h-5 text-red-500" />
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">Super Admin Access</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Unlock Master Control Console</p>
+            </div>
+          </div>
+          
+          <form 
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (superAdminPassword === 'Babatunde07' || superAdminPassword === 'PIPELOLUWA07') {
+                setIsSuperAdminModalOpen(false);
+                setSuperAdminPassword('');
+                setSuperAdminError('');
+                if (onSuccessAction) onSuccessAction();
+              } else {
+                setSuperAdminError('Incorrect password.');
+              }
+            }}
+            className="space-y-4"
+          >
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-350 mb-1.5">Master Password</label>
+              <input 
+                type="password"
+                value={superAdminPassword}
+                onChange={(e) => {
+                  setSuperAdminPassword(e.target.value);
+                  setSuperAdminError('');
+                }}
+                placeholder="••••••••"
+                className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-white transition-all text-sm font-medium"
+                required
+                autoFocus
+              />
+            </div>
+            
+            {superAdminError && <p className="text-red-600 text-xs font-medium bg-red-50 dark:bg-red-950/30 dark:text-red-400 px-3 py-1.5 rounded-lg">{superAdminError}</p>}
+            
+            <div className="flex gap-2 justify-end pt-2">
+              <button 
+                type="button"
+                onClick={() => {
+                  setIsSuperAdminModalOpen(false);
+                  setSuperAdminPassword('');
+                  setSuperAdminError('');
+                }}
+                className="px-4 py-2 text-xs text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors"
+              >
+                Cancel
+              </button>
+              <button 
+                type="submit"
+                className="px-4 py-2 text-xs bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold rounded-lg hover:opacity-90 transition-opacity"
+              >
+                Unlock Mode
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    );
+  };
+
   if (isRoleBlocked) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 dark:bg-slate-950 p-6">
@@ -103,12 +180,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex flex-col gap-3">
             <button
               onClick={() => {
-                const pwd = prompt('Enter Super Admin Password:');
-                if (pwd === 'Babatunde07' || pwd === 'PIPELOLUWA07') {
+                setOnSuccessAction(() => () => {
                   setCurrentUserRole('Super Admin');
-                } else {
-                  alert('Incorrect password!');
-                }
+                });
+                setIsSuperAdminModalOpen(true);
               }}
               className="w-full bg-primary-600 hover:bg-primary-700 text-white py-2.5 rounded-xl font-medium transition-all hover:scale-[1.02] active:scale-[0.98] duration-200 shadow-sm"
             >
@@ -126,6 +201,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               Sign Out
             </button>
           </div>
+          {renderSuperAdminModal()}
         </div>
       </div>
     );
@@ -279,13 +355,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
           <button 
             onClick={() => {
-              const pwd = prompt('Enter Super Admin Password:');
-              if (pwd === 'Babatunde07' || pwd === 'PIPELOLUWA07') {
+              setOnSuccessAction(() => () => {
                 setCurrentUserRole('Super Admin');
                 router.push('/admin/superadmin');
-              } else {
-                alert('Incorrect password!');
-              }
+              });
+              setIsSuperAdminModalOpen(true);
             }}
             className="flex items-center justify-center gap-2 w-full px-3 py-2.5 text-xs font-semibold bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 dark:bg-red-950/20 dark:text-red-400 dark:border-red-900/30 rounded-xl transition-all mb-3 shadow-sm hover:scale-[1.02] duration-200"
           >
@@ -334,6 +408,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           )}
         </div>
       </main>
+      {renderSuperAdminModal()}
     </div>
   );
 }
