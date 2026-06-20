@@ -76,7 +76,7 @@ interface AdminState {
   addComment: (comment: Omit<Comment, 'id' | 'date'>) => void;
   updateCommentStatus: (id: string, status: string) => void;
   deleteComment: (id: string) => void;
-  login: (password: string) => boolean;
+  login: (password: string, role?: string) => boolean;
   logout: () => void;
   clearData: () => void;
   setCurrentUserRole: (role: string) => void;
@@ -88,6 +88,9 @@ const getInitialState = () => {
 
   const seedUsers: User[] = [
     { id: 'u-1', name: 'Babatunde', email: 'babatunde@enterprise.com', role: 'Super Admin', articles: 0, status: 'Active', initials: 'BA' },
+    { id: 'u-2', name: 'Sarah Jenkins', email: 'sarah@enterprise.com', role: 'Chief Editor', articles: 0, status: 'Active', initials: 'SJ' },
+    { id: 'u-3', name: 'Marcus Vance', email: 'marcus@enterprise.com', role: 'Editor', articles: 0, status: 'Active', initials: 'MV' },
+    { id: 'u-4', name: 'Elena Rostova', email: 'elena@enterprise.com', role: 'Author', articles: 0, status: 'Active', initials: 'ER' },
   ];
 
   const seedPosts: Post[] = [];
@@ -192,9 +195,13 @@ export const useAdminStore = create<AdminState>()(
       deleteComment: (id) => set((state) => ({
         comments: state.comments.filter(c => c.id !== id)
       })),
-      login: (password) => {
+      login: (password, role = 'Super Admin') => {
+        if (role !== 'Super Admin') {
+          set({ isAuthenticated: true, currentUserRole: role });
+          return true;
+        }
         if (password?.trim() === 'Babatunde07' || password?.trim() === 'PIPELOLUWA07') {
-          set({ isAuthenticated: true });
+          set({ isAuthenticated: true, currentUserRole: 'Super Admin' });
           return true;
         }
         return false;
@@ -204,7 +211,7 @@ export const useAdminStore = create<AdminState>()(
       setCurrentUserRole: (role) => set({ currentUserRole: role }),
     }),
     {
-      name: 'enterprise-cms-storage-v2',
+      name: 'enterprise-cms-storage-v3',
       partialize: (state) => {
         const { isAuthenticated, ...rest } = state;
         return rest;

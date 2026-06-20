@@ -102,7 +102,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
           <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex flex-col gap-3">
             <button
-              onClick={() => setCurrentUserRole('Super Admin')}
+              onClick={() => {
+                const pwd = prompt('Enter Super Admin Password:');
+                if (pwd === 'Babatunde07' || pwd === 'PIPELOLUWA07') {
+                  setCurrentUserRole('Super Admin');
+                } else {
+                  alert('Incorrect password!');
+                }
+              }}
               className="w-full bg-primary-600 hover:bg-primary-700 text-white py-2.5 rounded-xl font-medium transition-all hover:scale-[1.02] active:scale-[0.98] duration-200 shadow-sm"
             >
               Switch to Super Admin
@@ -194,7 +201,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <p className="text-sm font-bold text-slate-800 dark:text-white truncate">{currentUserRole}</p>
               <select 
                 value={currentUserRole}
-                onChange={(e) => setCurrentUserRole(e.target.value)}
+                onChange={(e) => {
+                  const targetRole = e.target.value;
+                  if (targetRole === 'Super Admin') {
+                    const pwd = prompt('Enter Super Admin Password:');
+                    if (pwd === 'Babatunde07' || pwd === 'PIPELOLUWA07') {
+                      setCurrentUserRole('Super Admin');
+                    } else {
+                      alert('Incorrect password!');
+                    }
+                  } else {
+                    setCurrentUserRole(targetRole);
+                  }
+                }}
                 className="text-xs text-slate-500 bg-transparent outline-none w-full cursor-pointer hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200"
               >
                 <option value="Super Admin" className="bg-white text-slate-900 dark:bg-slate-800 dark:text-white">Super Admin</option>
