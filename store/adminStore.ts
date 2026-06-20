@@ -92,7 +92,7 @@ const getInitialState = () => {
   ];
 
   const seedUsers: User[] = [
-    { id: 'u-1', name: 'PIPELOLUWA', email: 'PIPELOLUWA', role: 'Super Admin', articles: 2, status: 'Active', initials: 'PI' },
+    { id: 'u-1', name: 'Babatunde', email: 'babatunde@enterprise.com', role: 'Super Admin', articles: 2, status: 'Active', initials: 'BA' },
     { id: 'u-2', name: 'Jane Doe', email: 'jane@enterprise.com', role: 'Author', articles: 2, status: 'Active', initials: 'JD' },
   ];
 
@@ -100,7 +100,7 @@ const getInitialState = () => {
     {
       id: 'post-1',
       title: 'The Future of Web Development',
-      author: 'PIPELOLUWA',
+      author: 'Babatunde',
       status: 'Published',
       category: 'Technology',
       date: 'Jun 15, 2026',
@@ -139,7 +139,7 @@ const getInitialState = () => {
     {
       id: 'post-4',
       title: 'Designing a Minimalist Workspace',
-      author: 'PIPELOLUWA',
+      author: 'Babatunde',
       status: 'Draft',
       category: 'Lifestyle',
       date: 'Jun 19, 2026',
@@ -264,7 +264,7 @@ export const useAdminStore = create<AdminState>()(
         comments: state.comments.filter(c => c.id !== id)
       })),
       login: (password) => {
-        if (password?.trim() === 'Babatunde07' || password?.trim() === 'PIPELOLUWA') {
+        if (password?.trim() === 'Babatunde07') {
           set({ isAuthenticated: true });
           return true;
         }
@@ -275,7 +275,7 @@ export const useAdminStore = create<AdminState>()(
       setCurrentUserRole: (role) => set({ currentUserRole: role }),
     }),
     {
-      name: 'admin-storage',
+      name: 'enterprise-cms-storage-v1',
       partialize: (state) => {
         const { isAuthenticated, ...rest } = state;
         return rest;
