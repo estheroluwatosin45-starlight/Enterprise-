@@ -5,6 +5,8 @@ import {
   Shield, Activity, HardDrive, Cpu, Terminal, 
   CheckCircle, RefreshCw, Layers, Database, Play
 } from 'lucide-react';
+import { useAdminStore } from '@/store/adminStore';
+
 interface AuditLog {
   id: string;
   time: string;
@@ -13,6 +15,10 @@ interface AuditLog {
 }
 
 export default function SuperAdminConsole() {
+  const users = useAdminStore((state) => state.users);
+  const posts = useAdminStore((state) => state.posts);
+  const comments = useAdminStore((state) => state.comments);
+  const categories = useAdminStore((state) => state.categories);
 
   // Loading states for actions
   const [optimizing, setOptimizing] = useState(false);
@@ -108,10 +114,10 @@ export default function SuperAdminConsole() {
       {/* Health Monitoring Metrics Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
         {[
-          { label: 'CPU Utilization', value: '8.4%', sub: 'Optimized', icon: <Cpu className="w-5 h-5 text-purple-500" /> },
-          { label: 'RAM Usage', value: '42.1%', sub: 'Normal', icon: <Layers className="w-5 h-5 text-blue-500" /> },
-          { label: 'Database Size', value: '1.24 MB', sub: 'Healthy', icon: <Database className="w-5 h-5 text-indigo-500" /> },
-          { label: 'API Latency', value: '24 ms', sub: 'Excellent', icon: <Activity className="w-5 h-5 text-emerald-500" /> },
+          { label: 'Total Articles', value: posts.length.toString(), sub: 'Active Posts', icon: <Layers className="w-5 h-5 text-purple-500" /> },
+          { label: 'Team Members', value: users.length.toString(), sub: 'Registered Users', icon: <Shield className="w-5 h-5 text-blue-500" /> },
+          { label: 'User Comments', value: comments.length.toString(), sub: 'Discussions Feed', icon: <Activity className="w-5 h-5 text-indigo-500" /> },
+          { label: 'Active Categories', value: categories.length.toString(), sub: 'Configured Sections', icon: <Database className="w-5 h-5 text-emerald-500" /> },
         ].map((stat, i) => (
           <div key={i} className="glass p-6 rounded-2xl border border-white/20 dark:border-slate-800">
             <div className="flex items-center justify-between mb-4">
