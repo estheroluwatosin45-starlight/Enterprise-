@@ -31,12 +31,6 @@ export default function Navbar() {
               <button className="text-slate-400 hover:text-slate-500">
                 <Search className="w-5 h-5" />
               </button>
-              {mounted && (
-                <Link href="/admin" className="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors">
-                  <User className="w-4 h-4" />
-                  Admin
-                </Link>
-              )}
             </div>
           </div>
           <div className="-mr-2 flex items-center md:hidden">
