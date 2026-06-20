@@ -66,8 +66,8 @@ export default function AdminUsersPage() {
     <div className="max-w-6xl mx-auto space-y-8">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold font-display text-slate-900">Team & Roles</h1>
-          <p className="text-slate-500 text-sm mt-1">Manage users, authors, and permission levels.</p>
+          <h1 className="text-2xl font-bold font-display text-slate-900 dark:text-white">Team & Roles</h1>
+          <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Manage users, authors, and permission levels.</p>
         </div>
         <button 
           onClick={() => setShowModal(true)}
@@ -81,50 +81,50 @@ export default function AdminUsersPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className="glass p-6 rounded-2xl">
           <div className="flex items-center gap-4 mb-4">
-            <div className="w-12 h-12 bg-purple-100/80 text-purple-600 rounded-xl flex items-center justify-center border border-purple-200">
+            <div className="w-12 h-12 bg-purple-100/80 text-purple-600 dark:bg-purple-950/30 dark:text-purple-400 rounded-xl flex items-center justify-center border border-purple-200 dark:border-purple-900/30">
               <Shield className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="text-slate-500 text-sm font-medium">Super Admins</h3>
-              <p className="text-2xl font-bold font-display text-slate-900 mt-1">{superAdmins}</p>
+              <h3 className="text-slate-500 dark:text-slate-400 text-sm font-medium">Super Admins</h3>
+              <p className="text-2xl font-bold font-display text-slate-900 dark:text-white mt-1">{superAdmins}</p>
             </div>
           </div>
         </div>
         <div className="glass p-6 rounded-2xl">
           <div className="flex items-center gap-4 mb-4">
-            <div className="w-12 h-12 bg-blue-100/80 text-blue-600 rounded-xl flex items-center justify-center border border-blue-200">
+            <div className="w-12 h-12 bg-blue-100/80 text-blue-600 dark:bg-blue-950/30 dark:text-blue-400 rounded-xl flex items-center justify-center border border-blue-200 dark:border-blue-900/30">
               <Shield className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="text-slate-500 text-sm font-medium">Chief Editors</h3>
-              <p className="text-2xl font-bold font-display text-slate-900 mt-1">{chiefEditors}</p>
+              <h3 className="text-slate-500 dark:text-slate-400 text-sm font-medium">Chief Editors</h3>
+              <p className="text-2xl font-bold font-display text-slate-900 dark:text-white mt-1">{chiefEditors}</p>
             </div>
           </div>
         </div>
         <div className="glass p-6 rounded-2xl">
           <div className="flex items-center gap-4 mb-4">
-            <div className="w-12 h-12 bg-emerald-100/80 text-emerald-600 rounded-xl flex items-center justify-center border border-emerald-200">
+            <div className="w-12 h-12 bg-emerald-100/80 text-emerald-600 dark:bg-emerald-950/30 dark:text-emerald-400 rounded-xl flex items-center justify-center border border-emerald-200 dark:border-emerald-900/30">
               <Shield className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="text-slate-500 text-sm font-medium">Authors & Editors</h3>
-              <p className="text-2xl font-bold font-display text-slate-900 mt-1">{authorsAndEditors}</p>
+              <h3 className="text-slate-500 dark:text-slate-400 text-sm font-medium">Authors & Editors</h3>
+              <p className="text-2xl font-bold font-display text-slate-900 dark:text-white mt-1">{authorsAndEditors}</p>
             </div>
           </div>
         </div>
       </div>
 
       <div className="glass rounded-2xl overflow-hidden">
-        <div className="p-4 border-b border-white/40 flex flex-col md:flex-row gap-4 justify-between items-center bg-white/20">
+        <div className="p-4 border-b border-white/40 dark:border-slate-800/40 flex flex-col md:flex-row gap-4 justify-between items-center bg-white/20 dark:bg-slate-900/20">
           <div className="relative w-full md:w-96">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search className="h-4 w-4 text-slate-400" />
+              <Search className="h-4 w-4 text-slate-400 dark:text-slate-500" />
             </div>
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="block w-full pl-10 pr-3 py-2 text-sm border border-slate-200 rounded-lg leading-5 bg-white/50 backdrop-blur-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500/50 transition-shadow text-slate-900"
+              className="block w-full pl-10 pr-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-lg leading-5 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500/50 transition-shadow text-slate-900 dark:text-white"
               placeholder="Search users..."
             />
           </div>
@@ -132,7 +132,7 @@ export default function AdminUsersPage() {
             <select
               value={roleFilter}
               onChange={(e) => setRoleFilter(e.target.value)}
-              className="block w-full pl-3 pr-8 py-2 text-sm border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500/50 rounded-lg bg-white/50 backdrop-blur-sm text-slate-900"
+              className="block w-full pl-3 pr-8 py-2 text-sm border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-primary-500/50 rounded-lg bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm text-slate-900 dark:text-white"
             >
               <option value="All Roles">All Roles</option>
               <option value="Super Admin">Super Admin</option>
@@ -144,8 +144,8 @@ export default function AdminUsersPage() {
         </div>
         
         <div className="overflow-x-auto min-h-[350px] pb-12">
-          <table className="w-full text-left text-sm text-slate-600">
-            <thead className="bg-white/30 text-slate-500 uppercase font-semibold text-xs border-b border-white/40">
+          <table className="w-full text-left text-sm text-slate-600 dark:text-slate-350">
+            <thead className="bg-white/30 dark:bg-slate-900/30 text-slate-500 dark:text-slate-400 uppercase font-semibold text-xs border-b border-white/40 dark:border-slate-800/40">
               <tr>
                 <th className="px-6 py-4">User</th>
                 <th className="px-6 py-4">Role</th>
@@ -154,25 +154,25 @@ export default function AdminUsersPage() {
                 <th className="px-6 py-4 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/40">
+            <tbody className="divide-y divide-white/40 dark:divide-slate-800/40">
               {filteredUsers.map((user) => (
-                <tr key={user.id} className="hover:bg-white/40 transition-colors">
+                <tr key={user.id} className="hover:bg-white/40 dark:hover:bg-slate-800/20 transition-colors">
                   <td className="px-6 py-4 flex items-center gap-3">
                     <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-xs ${getColorClass(user.role)}`}>
                       {user.initials}
                     </div>
                     <div>
-                      <p className="font-semibold text-slate-900">{user.name}</p>
-                      <p className="text-xs text-slate-500 mt-0.5">{user.email}</p>
+                      <p className="font-semibold text-slate-900 dark:text-white">{user.name}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{user.email}</p>
                     </div>
                   </td>
-                  <td className="px-6 py-4 font-medium text-slate-900">{user.role}</td>
-                  <td className="px-6 py-4">{user.articles}</td>
+                  <td className="px-6 py-4 font-medium text-slate-900 dark:text-white">{user.role}</td>
+                  <td className="px-6 py-4 text-slate-600 dark:text-slate-300">{user.articles}</td>
                   <td className="px-6 py-4">
                     <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${
-                      user.status === 'Active' ? 'bg-emerald-100/80 text-emerald-700' : 
-                      user.status === 'Blocked' ? 'bg-red-100/80 text-red-700' :
-                      'bg-amber-100/80 text-amber-700'
+                      user.status === 'Active' ? 'bg-emerald-100/80 text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-400' : 
+                      user.status === 'Blocked' ? 'bg-red-100/80 text-red-700 dark:bg-red-950/20 dark:text-red-400' :
+                      'bg-amber-100/80 text-amber-700 dark:bg-amber-950/20 dark:text-amber-400'
                     }`}>
                       {user.status}
                     </span>
@@ -180,7 +180,7 @@ export default function AdminUsersPage() {
                   <td className="px-6 py-4 text-right">
                     {user.status === 'Pending' && (
                       <button 
-                        onClick={() => useAdminStore.getState().updateUser(user.id, { status: 'Active' })}
+                      onClick={() => useAdminStore.getState().updateUser(user.id, { status: 'Active' })}
                         className="px-3 py-1 mr-2 text-xs font-semibold bg-primary-100 text-primary-700 hover:bg-primary-200 rounded-lg transition-colors"
                       >
                         Approve
@@ -188,7 +188,7 @@ export default function AdminUsersPage() {
                     )}
                     <button 
                       onClick={() => deleteUser(user.id)}
-                      className="p-2 text-slate-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors"
+                      className="p-2 text-slate-400 hover:text-red-600 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
                       title="Delete User"
                     >
                       <Trash2 className="w-5 h-5" />
@@ -196,7 +196,7 @@ export default function AdminUsersPage() {
                     <div className="relative inline-block text-left">
                       <button 
                         onClick={() => setActiveMenuUserId(activeMenuUserId === user.id ? null : user.id)}
-                        className="p-2 text-slate-400 hover:text-primary-600 rounded-lg hover:bg-white/50 transition-colors"
+                        className="p-2 text-slate-400 hover:text-primary-600 rounded-lg hover:bg-white/50 dark:hover:bg-slate-850/50 transition-colors"
                         title="Change Role"
                       >
                         <MoreVertical className="w-5 h-5" />
@@ -255,7 +255,7 @@ export default function AdminUsersPage() {
               ))}
               {filteredUsers.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-6 py-8 text-center text-slate-500">
+                  <td colSpan={5} className="px-6 py-8 text-center text-slate-500 dark:text-slate-400">
                     No users found.
                   </td>
                 </tr>

@@ -6,12 +6,13 @@ import { usePathname, useRouter } from 'next/navigation';
 import { LayoutDashboard, FileText, Image as ImageIcon, Users, Settings, Tag, MessageSquare, LogOut, Edit3, BarChart, ShieldAlert, Shield } from 'lucide-react';
 import { useAdminStore } from '@/store/adminStore';
 import { Logo } from '@/components/ui/Logo';
-
+import { useTheme } from 'next-themes';
 import { ThemeToggle } from '@/components/ThemeToggle';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
+  const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const isAuthenticated = useAdminStore((state) => state.isAuthenticated);
   const [hydrated, setHydrated] = useState(false);
@@ -66,6 +67,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       }
     }
   }, [mounted, hydrated, isAuthenticated, pathname, router]);
+
+  useEffect(() => {
+    if (mounted && hydrated && currentUserRole === 'Super Admin') {
+      if (theme !== 'dark') {
+        setTheme('dark');
+      }
+    }
+  }, [currentUserRole, theme, mounted, hydrated, setTheme]);
 
   const isActive = (path: string) => {
     if (!pathname) return false;
