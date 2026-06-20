@@ -53,6 +53,14 @@ export interface Comment {
   date: string;
 }
 
+export interface SiteSettings {
+  siteName: string;
+  supportEmail: string;
+  siteDescription: string;
+  metaTitle: string;
+  ogGuidelines: string;
+}
+
 interface AdminState {
   posts: Post[];
   users: User[];
@@ -61,6 +69,7 @@ interface AdminState {
   comments: Comment[];
   isAuthenticated: boolean;
   currentUserRole: string;
+  settings: SiteSettings;
 
   addPost: (post: Omit<Post, 'id' | 'date'> & { date?: string }) => void;
   updatePost: (id: string, post: Partial<Post>) => void;
@@ -80,6 +89,7 @@ interface AdminState {
   logout: () => void;
   clearData: () => void;
   setCurrentUserRole: (role: string) => void;
+  updateSettings: (settings: Partial<SiteSettings>) => void;
 }
 
 // Initial seed data helper
@@ -96,6 +106,13 @@ const getInitialState = () => {
   const seedPosts: Post[] = [];
   const seedMedia: MediaItem[] = [];
   const seedComments: Comment[] = [];
+  const seedSettings: SiteSettings = {
+    siteName: 'Enterprise CMS',
+    supportEmail: 'support@enterprisecms.com',
+    siteDescription: 'A premium, high-performance content management system.',
+    metaTitle: 'Enterprise CMS | Premium Publishing Platform',
+    ogGuidelines: "Read the latest articles from the industry's leading authors."
+  };
 
   return {
     posts: seedPosts,
@@ -103,6 +120,7 @@ const getInitialState = () => {
     categories: seedCategories,
     media: seedMedia,
     comments: seedComments,
+    settings: seedSettings,
   };
 };
 
@@ -118,6 +136,7 @@ export const useAdminStore = create<AdminState>()(
       comments: initialData.comments,
       isAuthenticated: false,
       currentUserRole: 'Super Admin',
+      settings: initialData.settings,
 
       addPost: (post) => set((state) => ({
         posts: [
@@ -205,6 +224,9 @@ export const useAdminStore = create<AdminState>()(
       logout: () => set({ isAuthenticated: false }),
       clearData: () => set({ posts: [], users: [], categories: [], media: [], comments: [] }),
       setCurrentUserRole: (role) => set({ currentUserRole: role }),
+      updateSettings: (newSettings) => set((state) => ({
+        settings: { ...state.settings, ...newSettings }
+      })),
     }),
     {
       name: 'enterprise-cms-storage-v3',
