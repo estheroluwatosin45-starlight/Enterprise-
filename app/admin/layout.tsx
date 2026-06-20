@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, FileText, Image as ImageIcon, Users, Settings, Tag, MessageSquare, LogOut, Edit3, BarChart, ShieldAlert } from 'lucide-react';
+import { LayoutDashboard, FileText, Image as ImageIcon, Users, Settings, Tag, MessageSquare, LogOut, Edit3, BarChart, ShieldAlert, Shield } from 'lucide-react';
 import { useAdminStore } from '@/store/adminStore';
 import { Logo } from '@/components/ui/Logo';
 
@@ -169,6 +169,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               
               {currentUserRole === 'Super Admin' && (
                 <>
+                  <Link href="/admin/superadmin" className={navLinkClass('/admin/superadmin')}>
+                    <Shield className="w-5 h-5 text-red-500" />
+                    Super Admin Console
+                  </Link>
                   <Link href="/admin/users" className={navLinkClass('/admin/users')}>
                     <Users className="w-5 h-5" />
                     Team & Roles
@@ -250,7 +254,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </header>
         
         <div className="flex-1 overflow-y-auto p-6 md:p-8">
-          {currentUserRole !== 'Super Admin' && pathname && (pathname.startsWith('/admin/users') || pathname.startsWith('/admin/analytics') || pathname.startsWith('/admin/settings')) ? (
+          {currentUserRole !== 'Super Admin' && pathname && (pathname.startsWith('/admin/superadmin') || pathname.startsWith('/admin/users') || pathname.startsWith('/admin/analytics') || pathname.startsWith('/admin/settings')) ? (
             <div className="flex flex-col items-center justify-center h-full">
               <div className="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mb-4">
                 <Settings className="w-8 h-8" />
