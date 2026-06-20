@@ -41,6 +41,7 @@ export default function AdminLoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter password..."
               className="w-full px-4 py-3 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900 transition-all font-medium"
+              required
               autoFocus
             />
           </div>
@@ -58,3 +59,4 @@ export default function AdminLoginPage() {
     </div>
   );
 }
+

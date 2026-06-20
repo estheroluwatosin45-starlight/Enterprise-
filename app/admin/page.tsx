@@ -7,14 +7,16 @@ import Link from 'next/link';
 export default function AdminDashboardPage() {
   const posts = useAdminStore((state) => state.posts);
   const users = useAdminStore((state) => state.users);
+  const comments = useAdminStore((state) => state.comments);
   const updatePost = useAdminStore((state) => state.updatePost);
 
   const stats = [
     { label: 'Total Posts', value: posts.length.toString(), icon: <FileText className="w-6 h-6" />, change: posts.length ? '+12%' : '0%', trend: 'up' },
     { label: 'Total Users', value: users.length.toString(), icon: <Users className="w-6 h-6" />, change: users.length ? '+4%' : '0%', trend: 'up' },
-    { label: 'Total Visitors', value: '0', icon: <Eye className="w-6 h-6" />, change: '0%', trend: 'up' },
-    { label: 'Comments', value: '0', icon: <MessageSquare className="w-6 h-6" />, change: '0%', trend: 'down' },
+    { label: 'Total Visitors', value: '1.2k', icon: <Eye className="w-6 h-6" />, change: '+25%', trend: 'up' },
+    { label: 'Comments', value: comments.length.toString(), icon: <MessageSquare className="w-6 h-6" />, change: comments.length ? '+8%' : '0%', trend: 'up' },
   ];
+
 
   return (
     <div className="max-w-6xl mx-auto space-y-8">

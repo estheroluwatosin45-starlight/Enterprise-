@@ -14,20 +14,35 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const isAuthenticated = useAdminStore((state) => state.isAuthenticated);
+  const [hydrated, setHydrated] = useState(false);
   const logout = useAdminStore((state) => state.logout);
   const currentUserRole = useAdminStore((state) => state.currentUserRole);
   const setCurrentUserRole = useAdminStore((state) => state.setCurrentUserRole);
   
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
+    let unsub: (() => void) | undefined;
+    if (useAdminStore.persist.hasHydrated()) {
+      setHydrated(true);
+    } else {
+      unsub = useAdminStore.persist.onFinishHydration(() => {
+        setHydrated(true);
+      });
+    }
+    return () => {
+      if (unsub) unsub();
+    };
   }, []);
 
   useEffect(() => {
-    if (mounted && !isAuthenticated && pathname !== '/admin/login') {
-      router.replace('/admin/login');
+    if (mounted && hydrated) {
+      if (!isAuthenticated && pathname !== '/admin/login') {
+        router.replace('/admin/login');
+      } else if (isAuthenticated && pathname === '/admin/login') {
+        router.replace('/admin');
+      }
     }
-  }, [mounted, isAuthenticated, pathname, router]);
+  }, [mounted, hydrated, isAuthenticated, pathname, router]);
 
   const isActive = (path: string) => {
     if (!pathname) return false;
@@ -42,7 +57,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
   }`;
 
-  if (!mounted) return null;
+  if (!mounted || !hydrated) return null;
 
   if (!isAuthenticated && pathname !== '/admin/login') {
     return null;
@@ -132,8 +147,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
           <button 
             onClick={() => {
-              logout();
-              router.push('/admin/login');
+              router.push('/');
+              setTimeout(() => {
+                logout();
+              }, 100);
             }}
             className="flex items-center gap-2 w-full px-3 py-2 text-sm text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
           >

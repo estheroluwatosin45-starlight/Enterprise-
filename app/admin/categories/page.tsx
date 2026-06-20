@@ -1,17 +1,23 @@
 'use client';
 
 import { useState } from 'react';
-import { Tag, Plus, Search, Filter, Trash2, Edit } from 'lucide-react';
-import Link from 'next/link';
+import { Tag, Plus, Search, Trash2, Edit } from 'lucide-react';
 import { useAdminStore } from '@/store/adminStore';
 
 export default function AdminCategoriesPage() {
   const categories = useAdminStore((state) => state.categories);
+  const posts = useAdminStore((state) => state.posts);
   const addCategory = useAdminStore((state) => state.addCategory);
+  const updateCategory = useAdminStore((state) => state.updateCategory);
   const deleteCat = useAdminStore((state) => state.deleteCategory);
 
   const [showModal, setShowModal] = useState(false);
   const [newCatName, setNewCatName] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Edit category states
+  const [editingCat, setEditingCat] = useState<{ id: string, name: string } | null>(null);
+  const [editName, setEditName] = useState('');
 
   const handleCreateCat = (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,6 +31,24 @@ export default function AdminCategoriesPage() {
     setNewCatName('');
     setShowModal(false);
   };
+
+  const handleUpdateCat = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editName || !editingCat) return;
+
+    updateCategory(editingCat.id, {
+      name: editName,
+      slug: editName.toLowerCase().replace(/[^a-z0-9]+/g, '-')
+    });
+
+    setEditingCat(null);
+    setEditName('');
+  };
+
+  const filteredCategories = categories.filter(cat => 
+    cat.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    cat.slug.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className="max-w-6xl mx-auto space-y-8">
@@ -50,7 +74,9 @@ export default function AdminCategoriesPage() {
             </div>
             <input
               type="text"
-              className="block w-full pl-10 pr-3 py-2 text-sm border-white/40 rounded-lg leading-5 bg-white/50 backdrop-blur-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500/50 transition-shadow"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="block w-full pl-10 pr-3 py-2 text-sm border border-slate-200/50 rounded-lg leading-5 bg-white/50 backdrop-blur-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500/50 transition-shadow"
               placeholder="Search categories..."
             />
           </div>
@@ -67,32 +93,43 @@ export default function AdminCategoriesPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-white/40">
-              {categories.map((cat) => (
-                <tr key={cat.id} className="hover:bg-white/40 transition-colors">
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      <Tag className="w-4 h-4 text-primary-500" />
-                      <span className="font-medium text-slate-900">{cat.name}</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 font-mono text-xs">{cat.slug}</td>
-                  <td className="px-6 py-4 text-center font-medium bg-slate-50/50">
-                    <span className="bg-white px-2 py-1 rounded-md text-primary-700 shadow-sm border border-slate-200/50">{cat.count}</span>
-                  </td>
-                  <td className="px-6 py-4 text-right">
-                    <button 
-                      onClick={() => deleteCat(cat.id)}
-                      className="p-2 text-slate-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                    <button className="p-2 text-slate-400 hover:text-primary-600 rounded-lg hover:bg-white/50 transition-colors ml-1">
-                      <Edit className="w-4 h-4" />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-              {categories.length === 0 && (
+              {filteredCategories.map((cat) => {
+                const articleCount = posts.filter(p => p.category === cat.name).length;
+                return (
+                  <tr key={cat.id} className="hover:bg-white/40 transition-colors">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2">
+                        <Tag className="w-4 h-4 text-primary-500" />
+                        <span className="font-medium text-slate-900">{cat.name}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 font-mono text-xs">{cat.slug}</td>
+                    <td className="px-6 py-4 text-center font-medium bg-slate-50/50">
+                      <span className="bg-white px-2 py-1 rounded-md text-primary-700 shadow-sm border border-slate-200/50">{articleCount}</span>
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <button 
+                        onClick={() => deleteCat(cat.id)}
+                        className="p-2 text-slate-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors"
+                        title="Delete Category"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                      <button 
+                        onClick={() => {
+                          setEditingCat({ id: cat.id, name: cat.name });
+                          setEditName(cat.name);
+                        }}
+                        className="p-2 text-slate-400 hover:text-primary-600 rounded-lg hover:bg-white/50 transition-colors ml-1"
+                        title="Edit Category"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+              {filteredCategories.length === 0 && (
                  <tr>
                    <td colSpan={4} className="px-6 py-8 text-center text-slate-500">
                      No categories available.
@@ -131,6 +168,35 @@ export default function AdminCategoriesPage() {
           </div>
         </div>
       )}
+
+      {editingCat && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setEditingCat(null)}></div>
+          <div className="bg-white rounded-2xl w-full max-w-sm relative z-10 shadow-xl overflow-hidden border border-slate-200">
+            <div className="p-6 border-b border-slate-100">
+              <h2 className="text-xl font-bold text-slate-900">Edit Category</h2>
+            </div>
+            <form onSubmit={handleUpdateCat} className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1.5">Category Name</label>
+                <input 
+                  type="text" 
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  placeholder="Category Name"
+                  className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/50"
+                  required
+                />
+              </div>
+              <div className="pt-2 flex justify-end gap-3">
+                <button type="button" onClick={() => setEditingCat(null)} className="px-4 py-2 text-slate-600 hover:bg-slate-50 rounded-lg">Cancel</button>
+                <button type="submit" className="bg-primary-600 hover:bg-primary-700 text-white px-5 py-2 rounded-lg font-medium transition-colors">Save Changes</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+

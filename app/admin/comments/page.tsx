@@ -1,14 +1,16 @@
 'use client';
 
 import { useState } from 'react';
-import { MessageSquare, Check, X, Search, Filter, Trash2 } from 'lucide-react';
+import { MessageSquare, Check, X, Search, Trash2 } from 'lucide-react';
+import { useAdminStore } from '@/store/adminStore';
 
 export default function AdminCommentsPage() {
-  const [comments, setComments] = useState<{ id: number, author: string, avatar: string, post: string, text: string, status: string, date: string }[]>([]);
+  const comments = useAdminStore((state) => state.comments);
+  const updateCommentStatus = useAdminStore((state) => state.updateCommentStatus);
+  const deleteComment = useAdminStore((state) => state.deleteComment);
 
-  const updateStatus = (id: number, status: string) => {
-    setComments(comments.map(c => c.id === id ? { ...c, status } : c));
-  };
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('All Status');
 
   const getStatusColor = (status: string) => {
     switch(status) {
@@ -18,6 +20,17 @@ export default function AdminCommentsPage() {
       default: return 'bg-slate-100 text-slate-700';
     }
   };
+
+  const filteredComments = comments.filter(c => {
+    const matchesSearch = 
+      c.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      c.text.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      c.post.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    const matchesStatus = statusFilter === 'All Status' || c.status === statusFilter;
+    
+    return matchesSearch && matchesStatus;
+  });
 
   return (
     <div className="max-w-6xl mx-auto space-y-8">
@@ -36,20 +49,26 @@ export default function AdminCommentsPage() {
             </div>
             <input
               type="text"
-              className="block w-full pl-10 pr-3 py-2 text-sm border-white/40 rounded-lg leading-5 bg-white/50 backdrop-blur-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500/50 transition-shadow"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="block w-full pl-10 pr-3 py-2 text-sm border border-slate-200/50 rounded-lg leading-5 bg-white/50 backdrop-blur-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500/50 transition-shadow"
               placeholder="Search comments..."
             />
           </div>
-          <select className="block w-full md:w-auto px-3 py-2 text-sm border-white/40 focus:outline-none focus:ring-2 focus:ring-primary-500/50 rounded-lg bg-white/50 backdrop-blur-sm">
-            <option>All Status</option>
-            <option>Pending</option>
-            <option>Approved</option>
-            <option>Spam</option>
+          <select 
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="block w-full md:w-auto px-3 py-2 text-sm border border-slate-200/50 focus:outline-none focus:ring-2 focus:ring-primary-500/50 rounded-lg bg-white/50 backdrop-blur-sm"
+          >
+            <option value="All Status">All Status</option>
+            <option value="Pending">Pending</option>
+            <option value="Approved">Approved</option>
+            <option value="Spam">Spam</option>
           </select>
         </div>
         
         <div className="divide-y divide-white/40">
-          {comments.map((comment) => (
+          {filteredComments.map((comment) => (
             <div key={comment.id} className="p-6 hover:bg-white/40 transition-colors">
               <div className="flex items-start gap-4">
                 <div className="w-10 h-10 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center font-bold flex-shrink-0 mt-1">
@@ -72,16 +91,20 @@ export default function AdminCommentsPage() {
                   </p>
                   <div className="flex items-center gap-2">
                     {comment.status !== 'Approved' && (
-                      <button onClick={() => updateStatus(comment.id, 'Approved')} className="text-xs flex items-center gap-1 font-medium text-emerald-600 hover:bg-emerald-50 px-2 py-1 rounded transition-colors">
+                      <button onClick={() => updateCommentStatus(comment.id, 'Approved')} className="text-xs flex items-center gap-1 font-medium text-emerald-600 hover:bg-emerald-50 px-2 py-1 rounded transition-colors">
                         <Check className="w-3 h-3" /> Approve
                       </button>
                     )}
                     {comment.status !== 'Spam' && (
-                      <button onClick={() => updateStatus(comment.id, 'Spam')} className="text-xs flex items-center gap-1 font-medium text-amber-600 hover:bg-amber-50 px-2 py-1 rounded transition-colors">
+                      <button onClick={() => updateCommentStatus(comment.id, 'Spam')} className="text-xs flex items-center gap-1 font-medium text-amber-600 hover:bg-amber-50 px-2 py-1 rounded transition-colors">
                         <X className="w-3 h-3" /> Mark Spam
                       </button>
                     )}
-                    <button className="text-xs flex items-center gap-1 font-medium text-red-600 hover:bg-red-50 px-2 py-1 rounded transition-colors ml-auto">
+                    <button 
+                      onClick={() => deleteComment(comment.id)}
+                      className="text-xs flex items-center gap-1 font-medium text-red-600 hover:bg-red-50 px-2 py-1 rounded transition-colors ml-auto"
+                      title="Delete Comment"
+                    >
                       <Trash2 className="w-3 h-3" /> Delete
                     </button>
                   </div>
@@ -89,7 +112,7 @@ export default function AdminCommentsPage() {
               </div>
             </div>
           ))}
-          {comments.length === 0 && (
+          {filteredComments.length === 0 && (
              <div className="p-8 text-center text-slate-500">
                No comments available.
              </div>
@@ -99,3 +122,4 @@ export default function AdminCommentsPage() {
     </div>
   );
 }
+

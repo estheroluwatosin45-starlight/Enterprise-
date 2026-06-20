@@ -2,34 +2,32 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { ArrowLeft, Save, X, Image as ImageIcon, Upload } from 'lucide-react';
 import dynamic from 'next/dynamic';
 const TipTapEditor = dynamic(() => import('@/components/editor/TipTapEditor'), { ssr: false });
 import { useAdminStore } from '@/store/adminStore';
 
-export default function NewPostPage() {
+export default function EditPostPage() {
   const router = useRouter();
-  const addPost = useAdminStore((state) => state.addPost);
+  const params = useParams();
+  const id = params?.id as string;
+
+  const posts = useAdminStore((state) => state.posts);
+  const updatePost = useAdminStore((state) => state.updatePost);
   const categories = useAdminStore((state) => state.categories);
-  const currentUserRole = useAdminStore((state) => state.currentUserRole);
+  const users = useAdminStore((state) => state.users);
   const media = useAdminStore((state) => state.media);
   const addMedia = useAdminStore((state) => state.addMedia);
 
+  const post = posts.find((p) => p.id === id);
+
   const [title, setTitle] = useState('');
   const [excerpt, setExcerpt] = useState('');
-  const [content, setContent] = useState('<h2>Start writing your masterpiece...</h2>');
+  const [content, setContent] = useState('');
   const [status, setStatus] = useState('Draft');
-  
-  // Set default category if categories exist
   const [category, setCategory] = useState('');
-  useEffect(() => {
-    if (categories.length > 0 && !category) {
-      setCategory(categories[0].name);
-    }
-  }, [categories, category]);
-
-  const [author, setAuthor] = useState(currentUserRole);
+  const [author, setAuthor] = useState('');
   const [image, setImage] = useState('');
   const [readTime, setReadTime] = useState('');
   const [tags, setTags] = useState<string[]>([]);
@@ -38,6 +36,21 @@ export default function NewPostPage() {
 
   // Media selection modal state
   const [showMediaModal, setShowMediaModal] = useState(false);
+
+  // Initialize form with post data
+  useEffect(() => {
+    if (post) {
+      setTitle(post.title);
+      setExcerpt(post.excerpt);
+      setContent(post.content);
+      setStatus(post.status);
+      setCategory(post.category);
+      setAuthor(post.author);
+      setImage(post.image || '');
+      setReadTime(post.readTime || '');
+      setTags(post.tags || []);
+    }
+  }, [post]);
 
   const handleAddTag = () => {
     if (newTag.trim() && !tags.includes(newTag.trim())) {
@@ -52,7 +65,7 @@ export default function NewPostPage() {
       return;
     }
     if (!category) {
-      alert('Please select a category or create one first');
+      alert('Please select a category');
       return;
     }
     
@@ -61,7 +74,7 @@ export default function NewPostPage() {
       formattedDate = new Date(publishDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     }
     
-    addPost({
+    updatePost(id, {
       title,
       excerpt,
       content,
@@ -82,19 +95,29 @@ export default function NewPostPage() {
       const reader = new FileReader();
       reader.onloadend = () => {
         const base64Url = reader.result as string;
-        // 1. Add to media library so it is saved
         addMedia({
           url: base64Url,
           name: file.name,
           size: (file.size / (1024 * 1024)).toFixed(2) + ' MB',
           type: file.type
         });
-        // 2. Set as post featured image
         setImage(base64Url);
       };
       reader.readAsDataURL(file);
     }
   };
+
+  if (!post) {
+    return (
+      <div className="max-w-md mx-auto text-center py-20">
+        <h2 className="text-2xl font-bold text-slate-800 mb-2">Article Not Found</h2>
+        <p className="text-slate-500 mb-6">The article you are trying to edit does not exist or has been removed.</p>
+        <Link href="/admin/posts" className="bg-primary-600 hover:bg-primary-700 text-white px-5 py-2.5 rounded-lg font-medium transition-colors">
+          Return to Articles
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
@@ -104,8 +127,8 @@ export default function NewPostPage() {
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold font-display text-slate-900">Create New Article</h1>
-            <p className="text-slate-500 text-sm mt-1">Draft processing via Auto-Save.</p>
+            <h1 className="text-2xl font-bold font-display text-slate-900">Edit Article</h1>
+            <p className="text-slate-500 text-sm mt-1">Modify content and adjust publish status.</p>
           </div>
         </div>
         <div className="flex items-center gap-3 self-start sm:self-auto">
@@ -199,9 +222,6 @@ export default function NewPostPage() {
                   {categories.map((c) => (
                     <option key={c.id} value={c.name}>{c.name}</option>
                   ))}
-                  {categories.length === 0 && (
-                    <option value="" disabled>No categories available. Please create one first.</option>
-                  )}
                 </select>
               </div>
 
@@ -212,8 +232,8 @@ export default function NewPostPage() {
                   onChange={(e) => setAuthor(e.target.value)}
                   className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white/50 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-primary-500/50 text-sm text-slate-700"
                 >
-                  <option value={currentUserRole}>{currentUserRole} (Current)</option>
-                  {useAdminStore.getState().users.filter(u => u.status === 'Active' && u.name !== currentUserRole && u.role !== currentUserRole).map(u => (
+                  <option value={author}>{author} (Current)</option>
+                  {users.filter(u => u.status === 'Active' && u.name !== author).map(u => (
                     <option key={u.id} value={u.name}>{u.name}</option>
                   ))}
                 </select>
@@ -370,4 +390,3 @@ export default function NewPostPage() {
     </div>
   );
 }
-
