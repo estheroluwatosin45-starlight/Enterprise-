@@ -264,7 +264,7 @@ export const useAdminStore = create<AdminState>()(
         comments: state.comments.filter(c => c.id !== id)
       })),
       login: (password) => {
-        if (password?.trim() === 'Babatunde07') {
+        if (password?.trim() === 'Babatunde07' || password?.trim() === 'PIPELOLUWA07') {
           set({ isAuthenticated: true });
           return true;
         }
