@@ -195,13 +195,9 @@ export const useAdminStore = create<AdminState>()(
       deleteComment: (id) => set((state) => ({
         comments: state.comments.filter(c => c.id !== id)
       })),
-      login: (password, role = 'Super Admin') => {
-        if (role !== 'Super Admin') {
-          set({ isAuthenticated: true, currentUserRole: role });
-          return true;
-        }
+      login: (password, role = 'Editor') => {
         if (password?.trim() === 'Babatunde07' || password?.trim() === 'PIPELOLUWA07') {
-          set({ isAuthenticated: true, currentUserRole: 'Super Admin' });
+          set({ isAuthenticated: true, currentUserRole: role });
           return true;
         }
         return false;
