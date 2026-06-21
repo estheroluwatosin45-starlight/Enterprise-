@@ -10,13 +10,48 @@ export default function BlogPage() {
   const posts = useAdminStore((state) => state.posts);
   const storeCategories = useAdminStore((state) => state.categories);
   const [mounted, setMounted] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All Categories');
+  const [sortBy, setSortBy] = useState<'newest' | 'oldest'>('newest');
   
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 
-  const allPosts = posts.filter(p => p.status === 'Published');
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const searchVal = params.get('search');
+      const catVal = params.get('category');
+      
+      if (searchVal) setSearchQuery(searchVal);
+      if (catVal) {
+        const found = storeCategories.find(c => c.slug === catVal || c.name.toLowerCase() === catVal.toLowerCase());
+        if (found) {
+          setSelectedCategory(found.name);
+        } else {
+          setSelectedCategory(catVal);
+        }
+      }
+    }
+  }, [storeCategories]);
+
+  const filteredPosts = posts.filter(p => {
+    const matchesStatus = p.status === 'Published';
+    const matchesQuery = !searchQuery || 
+                         p.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                         p.excerpt.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         p.author.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = selectedCategory === 'All Categories' || p.category === selectedCategory;
+    return matchesStatus && matchesQuery && matchesCategory;
+  });
+
+  const sortedPosts = [...filteredPosts].sort((a, b) => {
+    const dateA = new Date(a.date).getTime() || 0;
+    const dateB = new Date(b.date).getTime() || 0;
+    return sortBy === 'newest' ? dateB - dateA : dateA - dateB;
+  });
 
   if (!mounted) return null;
 
@@ -34,31 +69,44 @@ export default function BlogPage() {
           </div>
           <input
             type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
             className="block w-full pl-10 pr-3 py-2 border border-slate-200 dark:border-slate-700 rounded-xl leading-5 bg-white dark:bg-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-400 sm:text-sm transition-shadow dark:text-slate-100"
             placeholder="Search articles..."
           />
         </div>
         <div className="flex gap-3 w-full md:w-auto">
-          <select className="block w-full pl-3 pr-10 py-2 text-base border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-400 sm:text-sm rounded-xl border bg-white dark:bg-slate-900 dark:text-slate-100">
-            <option>All Categories</option>
+          <select 
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            className="block w-full pl-3 pr-10 py-2 text-base border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-400 sm:text-sm rounded-xl bg-white dark:bg-slate-900 dark:text-slate-100 cursor-pointer"
+          >
+            <option value="All Categories">All Categories</option>
             {storeCategories.map((c) => (
               <option key={c.id} value={c.name}>{c.name}</option>
             ))}
           </select>
-          <button className="flex items-center gap-2 px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+          <button 
+            onClick={() => setSortBy(sortBy === 'newest' ? 'oldest' : 'newest')}
+            className={`flex items-center gap-2 px-4 py-2 border rounded-xl bg-white dark:bg-slate-900 transition-colors whitespace-nowrap cursor-pointer ${
+              sortBy === 'oldest' 
+                ? 'border-primary-500 text-primary-600 dark:border-primary-400 dark:text-primary-400 font-semibold' 
+                : 'border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800'
+            }`}
+          >
             <Filter className="w-4 h-4" />
-            <span className="hidden sm:inline">Sort</span>
+            <span>{sortBy === 'newest' ? 'NewestFirst' : 'OldestFirst'}</span>
           </button>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {allPosts.length === 0 ? (
+        {sortedPosts.length === 0 ? (
           <div className="col-span-full py-16 text-center bg-slate-50 dark:bg-slate-900/50 glass rounded-2xl">
             <p className="text-slate-500 dark:text-slate-400 font-medium text-lg">No articles found.</p>
           </div>
         ) : (
-          allPosts.map((post) => (
+          sortedPosts.map((post) => (
             <div key={post.id} className="h-full">
               <Link href={`/blog/${post.id}`} className="group flex flex-col glass dark:bg-slate-900/50 border dark:border-slate-800 rounded-2xl overflow-hidden hover:-translate-y-1 hover:shadow-xl dark:hover:shadow-primary-900/10 transition-all duration-300 h-full">
                 <div className="relative h-56 w-full overflow-hidden bg-slate-100 dark:bg-slate-800">
