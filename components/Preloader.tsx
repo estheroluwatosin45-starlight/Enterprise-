@@ -9,13 +9,16 @@ export default function Preloader() {
   const [logs, setLogs] = useState<string[]>([]);
 
   const allLogs = [
-    { threshold: 5, text: 'SECURE HANDSHAKE STARTED' },
-    { threshold: 18, text: 'DECRYPTING CLIENT STORAGE' },
-    { threshold: 35, text: 'SYNCHRONIZING POST DATABASE' },
-    { threshold: 52, text: 'VERIFYING SYSTEM PERMISSIONS' },
-    { threshold: 70, text: 'LOADING USER INTERFACE ASSETS' },
-    { threshold: 85, text: 'OPTIMIZING RENDERING PIPELINE' },
-    { threshold: 98, text: 'HANDSHAKE COMPLETED SUCCESSFULLY' },
+    { threshold: 4, text: 'SECURE HANDSHAKE STARTED' },
+    { threshold: 12, text: 'DECRYPTING CLIENT STORAGE' },
+    { threshold: 22, text: 'ESTABLISHING DATABASE CONNECTION' },
+    { threshold: 34, text: 'SYNCHRONIZING CONTENT FEEDS' },
+    { threshold: 45, text: 'VERIFYING SECURITY TOKENS' },
+    { threshold: 56, text: 'LOADING MEDIA ASSETS LIBRARY' },
+    { threshold: 68, text: 'COMPILING DESIGN SYSTEM STACKS' },
+    { threshold: 78, text: 'RESOLVING NAVIGATION ROUTERS' },
+    { threshold: 88, text: 'OPTIMIZING VIEWPORT VIEWPORTS' },
+    { threshold: 96, text: 'CORE INTEGRITY CHECK: NOMINAL' },
   ];
 
   useEffect(() => {
@@ -155,13 +158,6 @@ export default function Preloader() {
           <h2 className="font-display font-black text-4xl tracking-[0.25em] uppercase bg-clip-text text-transparent bg-gradient-to-r from-white via-primary-200 to-white bg-[size:200%_auto] animate-text-glow-sweep pl-[0.25em]">
             Enterprise
           </h2>
-          <div className="flex items-center justify-center gap-2">
-            <span className="w-1.5 h-[1px] bg-primary-500/50" />
-            <span className="text-[10px] font-bold tracking-[0.4em] uppercase text-slate-400">
-              Content Management System
-            </span>
-            <span className="w-1.5 h-[1px] bg-primary-500/50" />
-          </div>
         </div>
 
         {/* Sci-Fi Loading Progress Section */}
@@ -269,12 +265,12 @@ export default function Preloader() {
         .animate-aurora-1 { animation: aurora-1 25s infinite ease-in-out; }
         .animate-aurora-2 { animation: aurora-2 20s infinite ease-in-out; }
         .animate-aurora-3 { animation: aurora-3 30s infinite ease-in-out; }
-        .animate-scan { animation: scan 8s infinite linear; }
-        .animate-hud-rotate-clockwise { animation: hud-rotate-cw 40s infinite linear; transform-origin: center; }
-        .animate-hud-rotate-counter { animation: hud-rotate-ccw 30s infinite linear; transform-origin: center; }
-        .animate-pulse-glow { animation: pulse-glow 4s infinite ease-in-out; }
-        .animate-text-glow-sweep { animation: text-glow-sweep 6s infinite linear; }
-        .animate-logo-draw { animation: logo-draw 5s infinite ease-in-out; }
+        .animate-scan { animation: scan 3s infinite linear; }
+        .animate-hud-rotate-clockwise { animation: hud-rotate-cw 12s infinite linear; transform-origin: center; }
+        .animate-hud-rotate-counter { animation: hud-rotate-ccw 8s infinite linear; transform-origin: center; }
+        .animate-pulse-glow { animation: pulse-glow 3s infinite ease-in-out; }
+        .animate-text-glow-sweep { animation: text-glow-sweep 3s infinite linear; }
+        .animate-logo-draw { animation: logo-draw 3s infinite ease-in-out; }
         .animate-terminal-cursor { animation: terminal-cursor 1s infinite steps(2); }
         
         .bg-scan-grid {
