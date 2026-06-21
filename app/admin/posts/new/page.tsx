@@ -21,6 +21,7 @@ export default function NewPostPage() {
   const [excerpt, setExcerpt] = useState('');
   const [content, setContent] = useState('<h2>Start writing your masterpiece...</h2>');
   const [status, setStatus] = useState('Draft');
+  const [isSaving, setIsSaving] = useState(false);
   
   // Set default category if categories exist
   const [category, setCategory] = useState('');
@@ -48,6 +49,8 @@ export default function NewPostPage() {
   };
 
   const handleSave = (publishStatus: string) => {
+    if (isSaving) return;
+
     if (!title) {
       alert('Title is required');
       return;
@@ -56,37 +59,42 @@ export default function NewPostPage() {
       alert('Please select a category or create one first');
       return;
     }
-    
-    let formattedDate = undefined;
-    if (publishDate) {
-      formattedDate = new Date(publishDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-    }
-    
-    const newPostId = Math.random().toString(36).substr(2, 9);
-    
-    if (publishStatus === 'Published' && currentUserRole !== 'Super Admin') {
-      addNotification({
-        type: 'review_post',
-        title: 'New Article Published',
-        message: `${author} has published a new article: "${title}". Please review it.`,
-        postId: newPostId
-      });
-    }
 
-    addPost({
-      id: newPostId,
-      title,
-      excerpt,
-      content,
-      status: publishStatus,
-      category,
-      author,
-      image,
-      readTime: readTime || '5 min read',
-      tags,
-      ...(formattedDate ? { date: formattedDate } : {})
-    });
-    router.push('/admin/posts');
+    setIsSaving(true);
+    
+    // Tiny timeout to let UI loading states render immediately
+    setTimeout(() => {
+      let formattedDate = undefined;
+      if (publishDate) {
+        formattedDate = new Date(publishDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      }
+      
+      const newPostId = Math.random().toString(36).substr(2, 9);
+      
+      if (publishStatus === 'Published' && currentUserRole !== 'Super Admin') {
+        addNotification({
+          type: 'review_post',
+          title: 'New Article Published',
+          message: `${author} has published a new article: "${title}". Please review it.`,
+          postId: newPostId
+        });
+      }
+
+      addPost({
+        id: newPostId,
+        title,
+        excerpt,
+        content,
+        status: publishStatus,
+        category,
+        author,
+        image,
+        readTime: readTime || '5 min read',
+        tags,
+        ...(formattedDate ? { date: formattedDate } : {})
+      });
+      router.push('/admin/posts');
+    }, 50);
   };
 
   const handleFeaturedImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -124,16 +132,18 @@ export default function NewPostPage() {
         <div className="flex items-center gap-3 self-start sm:self-auto">
           <button 
             onClick={() => handleSave('Draft')}
-            className="glass-button text-slate-700 px-4 py-2.5 rounded-xl transition-colors whitespace-nowrap"
+            disabled={isSaving}
+            className="glass-button text-slate-700 px-4 py-2.5 rounded-xl transition-colors whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
-            Save Draft
+            {isSaving ? 'Processing...' : 'Save Draft'}
           </button>
           <button 
             onClick={() => handleSave('Published')}
-            className="bg-primary-600 hover:bg-primary-700 text-white px-5 py-2.5 rounded-xl font-medium transition-colors inline-flex items-center gap-2 shadow-sm whitespace-nowrap border border-primary-500"
+            disabled={isSaving}
+            className="bg-primary-600 hover:bg-primary-700 text-white px-5 py-2.5 rounded-xl font-medium transition-colors inline-flex items-center gap-2 shadow-sm whitespace-nowrap border border-primary-500 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
             <Save className="w-4 h-4" />
-            Publish Now
+            {isSaving ? 'Publishing...' : 'Publish Now'}
           </button>
         </div>
       </div>
