@@ -1,13 +1,20 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 
 export default function Preloader() {
   const [progress, setProgress] = useState(0);
   const [isFading, setIsFading] = useState(false);
   const [isHidden, setIsHidden] = useState(true); // Default to true for SSR safety
+  const pathname = usePathname();
+  const isAdminPath = pathname?.startsWith('/admin');
 
   useEffect(() => {
+    if (isAdminPath) {
+      return;
+    }
+
     // Check if preloader has already run in the current browser tab session
     if (typeof window !== 'undefined' && (window as any).__PRELOADER_RAN__) {
       return;
@@ -68,7 +75,7 @@ export default function Preloader() {
     };
   }, []);
 
-  if (isHidden) return null;
+  if (isHidden || isAdminPath) return null;
 
   return (
     <div 
