@@ -7,26 +7,29 @@ export default function Preloader() {
   const [isFading, setIsFading] = useState(false);
   const [isHidden, setIsHidden] = useState(true); // Default to true for SSR safety
 
-  useEffect(() => {
-    // Check session storage to see if preloader has already run in this session
-    const hasVisited = sessionStorage.getItem('has-visited-enterprise-cms');
-    if (hasVisited) {
-      return;
-    }
+  const getStatusText = (val: number) => {
+    if (val < 20) return 'Initializing system core...';
+    if (val < 45) return 'Loading secure database modules...';
+    if (val < 70) return 'Syncing publish feeds & layout assets...';
+    if (val < 90) return 'Optimizing page layout for responsiveness...';
+    if (val < 100) return 'Finalizing preparation...';
+    return 'All systems operational!';
+  };
 
-    // It's the first visit, so display it and lock body scroll
+  useEffect(() => {
+    // Show preloader on every mount/reload and lock body scroll
     setIsHidden(false);
     document.body.style.overflow = 'hidden';
 
-    // Organic loading progress simulation
+    // Organic loading progress simulation over ~10 seconds
     let currentProgress = 0;
-    const duration = 1200; // 1.2s total animation time
-    const intervalTime = 16; // ~60fps
+    const duration = 9500; // ~9.5s total animation time
+    const intervalTime = 20; // 50fps
     const step = 100 / (duration / intervalTime);
 
     const timer = setInterval(() => {
-      // Add random small jumps to make the loading feel organic
-      currentProgress += step + Math.random() * 3.5;
+      // Add small jumps to make the loading feel organic
+      currentProgress += step + Math.random() * 0.08;
       if (currentProgress >= 100) {
         currentProgress = 100;
         clearInterval(timer);
@@ -34,19 +37,18 @@ export default function Preloader() {
         // Hold at 100% for a brief moment, then fade out
         setTimeout(() => {
           setIsFading(true);
-          sessionStorage.setItem('has-visited-enterprise-cms', 'true');
           
           // Unmount and restore scroll after fade-out transition completes
           setTimeout(() => {
             setIsHidden(true);
             document.body.style.overflow = '';
           }, 500); // 500ms fade transition duration
-        }, 150);
+        }, 300);
       }
       setProgress(Math.min(100, Math.floor(currentProgress)));
     }, intervalTime);
 
-    // Fail-safe self-destruction timer (max 2.8s)
+    // Fail-safe self-destruction timer (max 11.5s)
     const failSafe = setTimeout(() => {
       clearInterval(timer);
       setIsFading(true);
@@ -54,7 +56,7 @@ export default function Preloader() {
         setIsHidden(true);
         document.body.style.overflow = '';
       }, 500);
-    }, 2800);
+    }, 11500);
 
     return () => {
       clearInterval(timer);
@@ -129,9 +131,14 @@ export default function Preloader() {
             />
           </div>
           {/* Percentage */}
-          <span className="font-mono text-[10px] font-bold text-slate-400 dark:text-slate-500 tracking-wider">
-            {progress}%
-          </span>
+          <div className="flex justify-between items-center text-[10px] font-bold text-slate-400 dark:text-slate-500 tracking-wider">
+            <span>{progress}%</span>
+            <span>LOADING</span>
+          </div>
+          {/* Status Message */}
+          <p className="text-[10px] font-bold text-primary-500 dark:text-primary-400 tracking-wide uppercase transition-all duration-300 min-h-[14px]">
+            {getStatusText(progress)}
+          </p>
         </div>
 
       </div>
