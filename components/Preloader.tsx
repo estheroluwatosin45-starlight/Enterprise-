@@ -8,7 +8,12 @@ export default function Preloader() {
   const [isHidden, setIsHidden] = useState(true); // Default to true for SSR safety
 
   useEffect(() => {
-    // Show preloader on every reload/mount and lock body scroll
+    // Check if preloader has already run in the current browser tab session
+    if (typeof window !== 'undefined' && (window as any).__PRELOADER_RAN__) {
+      return;
+    }
+
+    // Show preloader on every mount/reload and lock body scroll
     setIsHidden(false);
     document.body.style.overflow = 'hidden';
 
@@ -29,6 +34,10 @@ export default function Preloader() {
         setTimeout(() => {
           setIsFading(true);
           
+          if (typeof window !== 'undefined') {
+            (window as any).__PRELOADER_RAN__ = true;
+          }
+          
           // Unmount and restore scroll after fade-out transition completes
           setTimeout(() => {
             setIsHidden(true);
@@ -43,6 +52,9 @@ export default function Preloader() {
     const failSafe = setTimeout(() => {
       clearInterval(timer);
       setIsFading(true);
+      if (typeof window !== 'undefined') {
+        (window as any).__PRELOADER_RAN__ = true;
+      }
       setTimeout(() => {
         setIsHidden(true);
         document.body.style.overflow = '';
