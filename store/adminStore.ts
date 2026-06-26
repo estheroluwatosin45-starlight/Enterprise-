@@ -85,6 +85,7 @@ interface AdminState {
   addPost: (post: Omit<Post, 'id' | 'date'> & { id?: string, date?: string }) => void;
   updatePost: (id: string, post: Partial<Post>) => void;
   deletePost: (id: string) => void;
+  approvePost: (postId: string) => void;
   addUser: (user: Omit<User, 'id'>) => void;
   deleteUser: (id: string) => void;
   updateUser: (id: string, user: Partial<User>) => void;
@@ -166,7 +167,12 @@ export const useAdminStore = create<AdminState>()(
         posts: state.posts.map(post => post.id === id ? { ...post, ...updatedPost } : post)
       })),
       deletePost: (id) => set((state) => ({
-        posts: state.posts.filter(post => post.id !== id)
+        posts: state.posts.filter(post => post.id !== id),
+        notifications: (state.notifications || []).map(n => n.postId === id ? { ...n, read: true } : n)
+      })),
+      approvePost: (postId) => set((state) => ({
+        posts: state.posts.map(post => post.id === postId ? { ...post, status: 'Published' } : post),
+        notifications: (state.notifications || []).map(n => n.postId === postId ? { ...n, read: true } : n)
       })),
       addUser: (user) => set((state) => ({
         users: [

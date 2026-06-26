@@ -28,7 +28,7 @@ export default function EditPostPage() {
   const [excerpt, setExcerpt] = useState('');
   const [content, setContent] = useState('');
   const [status, setStatus] = useState('Draft');
-  const [isSaving, setIsSaving] = useState(false);
+  const [savingType, setSavingType] = useState<null | 'Draft' | 'Published'>(null);
   const [category, setCategory] = useState('');
   const [author, setAuthor] = useState('');
   const [image, setImage] = useState('');
@@ -63,7 +63,7 @@ export default function EditPostPage() {
   };
 
   const handleSave = (publishStatus: string) => {
-    if (isSaving) return;
+    if (savingType !== null) return;
 
     if (!title) {
       alert('Title is required');
@@ -74,7 +74,8 @@ export default function EditPostPage() {
       return;
     }
 
-    setIsSaving(true);
+    const currentSaveType = publishStatus === 'Published' ? 'Published' : 'Draft';
+    setSavingType(currentSaveType);
     
     // Tiny timeout to let UI loading states render immediately
     setTimeout(() => {
@@ -83,11 +84,13 @@ export default function EditPostPage() {
         formattedDate = new Date(publishDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
       }
       
+      let postStatus = publishStatus;
       if (publishStatus === 'Published' && currentUserRole !== 'Super Admin') {
+        postStatus = 'Pending Review';
         addNotification({
           type: 'review_post',
-          title: 'Edited Article Published',
-          message: `${author} has published edits to: "${title}". Please review it.`,
+          title: 'Edited Article Pending Review',
+          message: `Edits to "${title}" have been submitted for review by ${author}.`,
           postId: id
         });
       }
@@ -96,7 +99,7 @@ export default function EditPostPage() {
         title,
         excerpt,
         content,
-        status: publishStatus,
+        status: postStatus,
         category,
         author,
         image,
@@ -153,18 +156,18 @@ export default function EditPostPage() {
         <div className="flex items-center gap-3 self-start sm:self-auto">
           <button 
             onClick={() => handleSave('Draft')}
-            disabled={isSaving}
+            disabled={savingType !== null}
             className="glass-button text-slate-700 px-4 py-2.5 rounded-xl transition-colors whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
-            {isSaving ? 'Processing...' : 'Save Draft'}
+            {savingType === 'Draft' ? 'Processing...' : 'Save Draft'}
           </button>
           <button 
             onClick={() => handleSave('Published')}
-            disabled={isSaving}
+            disabled={savingType !== null}
             className="bg-primary-600 hover:bg-primary-700 text-white px-5 py-2.5 rounded-xl font-medium transition-colors inline-flex items-center gap-2 shadow-sm whitespace-nowrap border border-primary-500 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
             <Save className="w-4 h-4" />
-            {isSaving ? 'Publishing...' : 'Publish Now'}
+            {savingType === 'Published' ? 'Publishing...' : 'Publish Now'}
           </button>
         </div>
       </div>

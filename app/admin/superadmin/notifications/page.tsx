@@ -7,27 +7,21 @@ import Link from 'next/link';
 export default function NotificationsPage() {
   const notifications = useAdminStore((state) => state.notifications) || [];
   const posts = useAdminStore((state) => state.posts) || [];
-  const updatePost = useAdminStore((state) => state.updatePost);
-  const markNotificationRead = useAdminStore((state) => state.markNotificationRead);
+  const approvePost = useAdminStore((state) => state.approvePost);
   const clearAllNotifications = useAdminStore((state) => state.clearAllNotifications);
   const deletePost = useAdminStore((state) => state.deletePost);
+  const markNotificationRead = useAdminStore((state) => state.markNotificationRead);
 
   const unreadPostNotifications = notifications.filter(n => !n.read && n.type === 'review_post' && n.postId);
   const pendingPosts = posts.filter(p => unreadPostNotifications.some(n => n.postId === p.id));
 
   const handleApprove = (postId: string) => {
-    // Post is already published, just acknowledge the notification
-    notifications.forEach(n => {
-      if (!n.read && n.postId === postId) markNotificationRead(n.id);
-    });
+    approvePost(postId);
   };
 
   const handleDelete = (postId: string) => {
     if (confirm("Are you sure you want to completely delete this article from the website?")) {
       deletePost(postId);
-      notifications.forEach(n => {
-        if (!n.read && n.postId === postId) markNotificationRead(n.id);
-      });
     }
   };
 
@@ -70,8 +64,12 @@ export default function NotificationsPage() {
                 <div className="absolute top-0 left-0 w-1 h-full bg-amber-400"></div>
                 <div className="flex justify-between items-start mb-3">
                   <div>
-                    <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-emerald-600 bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full mb-2">
-                      <CheckCircle className="w-3 h-3" /> Published
+                    <span className={`inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full mb-2 ${
+                      post.status === 'Published'
+                        ? 'text-emerald-600 bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-950/40'
+                        : 'text-amber-600 bg-amber-50 dark:text-amber-400 dark:bg-amber-950/40'
+                    }`}>
+                      {post.status === 'Published' ? <CheckCircle className="w-3 h-3" /> : <Clock className="w-3 h-3" />} {post.status}
                     </span>
                     <h3 className="text-lg font-bold text-slate-900 dark:text-white">{post.title}</h3>
                     <p className="text-sm text-slate-500 dark:text-slate-400">By <span className="font-medium text-slate-700 dark:text-slate-300">{post.author}</span> in {post.category}</p>
@@ -85,7 +83,7 @@ export default function NotificationsPage() {
                     onClick={() => handleApprove(post.id)}
                     className="flex-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 dark:bg-emerald-900/20 dark:hover:bg-emerald-900/40 dark:text-emerald-400 py-2 rounded-xl text-sm font-semibold transition-colors flex items-center justify-center gap-2 border border-emerald-200 dark:border-emerald-800/50"
                   >
-                    <CheckCircle className="w-4 h-4" /> Looks Good (Acknowledge)
+                    <CheckCircle className="w-4 h-4" /> Approve & Publish
                   </button>
                   <button 
                     onClick={() => handleDelete(post.id)}
