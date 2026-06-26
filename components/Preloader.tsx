@@ -73,7 +73,7 @@ export default function Preloader() {
       clearTimeout(failSafe);
       document.body.style.overflow = '';
     };
-  }, []);
+  }, [isAdminPath]);
 
   if (isHidden || isAdminPath) return null;
 
