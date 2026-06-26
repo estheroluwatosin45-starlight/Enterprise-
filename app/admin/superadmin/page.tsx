@@ -63,26 +63,28 @@ export default function SuperAdminConsole() {
               </p>
             </div>
           </div>
-          <button 
-            onClick={() => {
-              window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-            }}
-            className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold transition-colors whitespace-nowrap shadow-sm"
+          <Link 
+            href="/admin/superadmin/notifications"
+            className="px-4 py-2 bg-red-600 hover:bg-red-750 text-white rounded-xl text-xs font-bold transition-colors whitespace-nowrap shadow-sm text-center"
           >
             Review Now
-          </button>
+          </Link>
         </div>
       )}
 
       {/* Health Monitoring Metrics Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
         {[
-          { label: 'Total Articles', value: posts.length.toString(), sub: 'Active Posts', icon: <Layers className="w-5 h-5 text-primary-500" /> },
-          { label: 'Team Members', value: users.length.toString(), sub: 'Registered Users', icon: <Shield className="w-5 h-5 text-blue-500" /> },
-          { label: 'User Comments', value: comments.length.toString(), sub: 'Discussions Feed', icon: <Activity className="w-5 h-5 text-indigo-500" /> },
-          { label: 'Active Categories', value: categories.length.toString(), sub: 'Configured Sections', icon: <Database className="w-5 h-5 text-emerald-500" /> },
+          { label: 'Total Articles', value: posts.length.toString(), sub: 'Active Posts', icon: <Layers className="w-5 h-5 text-primary-500" />, href: '/admin/posts' },
+          { label: 'Team Members', value: users.length.toString(), sub: 'Registered Users', icon: <Shield className="w-5 h-5 text-blue-500" />, href: '/admin/users' },
+          { label: 'User Comments', value: comments.length.toString(), sub: 'Discussions Feed', icon: <Activity className="w-5 h-5 text-indigo-500" />, href: '/admin/comments' },
+          { label: 'Active Categories', value: categories.length.toString(), sub: 'Configured Sections', icon: <Database className="w-5 h-5 text-emerald-500" />, href: '/admin/categories' },
         ].map((stat, i) => (
-          <div key={i} className="glass p-6 rounded-2xl border border-white/20 dark:border-slate-800">
+          <Link 
+            href={stat.href} 
+            key={i} 
+            className="glass p-6 rounded-2xl border border-white/20 dark:border-slate-800 hover:-translate-y-0.5 transition-transform duration-300 block hover:shadow-md hover:bg-white/40 cursor-pointer text-left"
+          >
             <div className="flex items-center justify-between mb-4">
               <span className="text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase tracking-wider">{stat.label}</span>
               {stat.icon}
@@ -92,7 +94,7 @@ export default function SuperAdminConsole() {
               <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
               {stat.sub}
             </p>
-          </div>
+          </Link>
         ))}
       </div>
 

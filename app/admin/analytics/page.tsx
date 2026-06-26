@@ -9,18 +9,18 @@ import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 
 const trafficData = [
-  { name: 'Jan', views: 0 },
-  { name: 'Feb', views: 0 },
-  { name: 'Mar', views: 0 },
-  { name: 'Apr', views: 0 },
-  { name: 'May', views: 0 },
-  { name: 'Jun', views: 0 },
+  { name: 'Jan', views: 850 },
+  { name: 'Feb', views: 1200 },
+  { name: 'Mar', views: 980 },
+  { name: 'Apr', views: 1750 },
+  { name: 'May', views: 2400 },
+  { name: 'Jun', views: 1950 },
 ];
 
 const visitorData = [
-  { name: 'Desktop', value: 0 },
-  { name: 'Mobile', value: 0 },
-  { name: 'Tablet', value: 0 },
+  { name: 'Desktop', value: 65 },
+  { name: 'Mobile', value: 25 },
+  { name: 'Tablet', value: 10 },
 ];
 
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b'];
@@ -49,10 +49,10 @@ export default function AdminAnalyticsPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: 'Total Page Views', value: '0', icon: <Eye className="w-5 h-5" /> },
-          { label: 'Unique Visitors', value: '0', icon: <Users className="w-5 h-5" /> },
-          { label: 'Avg. Session Duration', value: '0m 0s', icon: <Clock className="w-5 h-5" /> },
-          { label: 'Bounce Rate', value: '0%', icon: <MousePointerClick className="w-5 h-5" /> },
+          { label: 'Total Page Views', value: '9,130', icon: <Eye className="w-5 h-5" /> },
+          { label: 'Unique Visitors', value: '1.2k', icon: <Users className="w-5 h-5" /> },
+          { label: 'Avg. Session Duration', value: '2m 45s', icon: <Clock className="w-5 h-5" /> },
+          { label: 'Bounce Rate', value: '41.2%', icon: <MousePointerClick className="w-5 h-5" /> },
         ].map((stat, i) => (
           <div key={i} className="glass rounded-xl p-5 border border-white/40 dark:border-slate-800/40">
             <div className="flex items-center gap-3 text-slate-500 dark:text-slate-400 mb-3">
