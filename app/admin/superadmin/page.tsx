@@ -53,7 +53,15 @@ export default function SuperAdminConsole() {
 
       {/* High-Visibility Alert Banner */}
       {unreadPostNotifications.length > 0 && (
-        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-900/50 rounded-2xl p-4 flex items-center justify-between shadow-sm animate-in fade-in slide-in-from-top-4 duration-500">
+        <div 
+          onClick={() => {
+            const element = document.getElementById('notification-center');
+            if (element) {
+              element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }}
+          className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-900/50 rounded-2xl p-4 flex items-center justify-between shadow-sm animate-in fade-in slide-in-from-top-4 duration-500 cursor-pointer hover:bg-red-100/50 dark:hover:bg-red-900/30 transition-colors"
+        >
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-red-100 dark:bg-red-950/40 text-red-600 dark:text-red-400 rounded-xl flex items-center justify-center shrink-0">
               <Bell className="w-5 h-5 animate-bounce" />
@@ -61,13 +69,12 @@ export default function SuperAdminConsole() {
             <div>
               <h3 className="font-bold text-red-900 dark:text-red-100 text-sm">Action Required: New Articles</h3>
               <p className="text-red-700 dark:text-red-300 text-xs mt-0.5">
-                You have {unreadPostNotifications.length} newly published article{unreadPostNotifications.length > 1 ? 's' : ''} waiting for your review. Please scroll down to the Notification Center.
+                You have {unreadPostNotifications.length} newly published article{unreadPostNotifications.length > 1 ? 's' : ''} waiting for your review. Click here to go to the Notification Center.
               </p>
             </div>
           </div>
           <button 
-            onClick={() => router.push('/admin/superadmin/notifications')}
-            className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold transition-colors whitespace-nowrap shadow-sm text-center cursor-pointer"
+            className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold transition-colors whitespace-nowrap shadow-sm text-center"
           >
             Review Now
           </button>
@@ -101,7 +108,7 @@ export default function SuperAdminConsole() {
       </div>
 
       {/* Notification Center */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8 border-t border-slate-200 dark:border-slate-800 pt-8">
+      <div id="notification-center" className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8 border-t border-slate-200 dark:border-slate-800 pt-8">
         
         {/* Approvals Column */}
         <div className="lg:col-span-2 space-y-4">

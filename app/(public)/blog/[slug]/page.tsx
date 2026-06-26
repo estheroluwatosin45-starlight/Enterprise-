@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { use } from 'react';
+import { use, useEffect } from 'react';
 import { Clock, ArrowLeft } from 'lucide-react';
 import { useAdminStore } from '@/store/adminStore';
 import { notFound } from 'next/navigation';
@@ -11,6 +11,13 @@ export default function BlogPostPage({ params }: { params: Promise<{ slug: strin
   const { slug } = use(params);
   const posts = useAdminStore((state) => state.posts);
   const post = posts.find((p) => p.id === slug);
+  const updatePost = useAdminStore((state) => state.updatePost);
+
+  useEffect(() => {
+    if (post) {
+      updatePost(post.id, { views: (post.views || 0) + 1 });
+    }
+  }, [post?.id, updatePost]);
 
   if (!post) {
     return notFound();

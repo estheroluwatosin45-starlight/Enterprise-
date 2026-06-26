@@ -249,27 +249,27 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           
           <div className="flex-1 overflow-y-auto py-6">
             <nav className="space-y-1.5 px-4">
-              <Link href="/admin/superadmin" className={`flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors ${isActive('/admin/superadmin') ? 'bg-primary-500/10 text-primary-700 dark:text-primary-300 border border-primary-500/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200'}`}>
+              <Link href="/admin/superadmin" onClick={() => setIsMobileMenuOpen(false)} className={`flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors ${isActive('/admin/superadmin') ? 'bg-primary-500/10 text-primary-700 dark:text-primary-300 border border-primary-500/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200'}`}>
                 <Shield className="w-5 h-5 text-primary-500" />
                 Console Home
               </Link>
-              <Link href="/admin/posts" className={`flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors ${isActive('/admin/posts') ? 'bg-primary-500/10 text-primary-700 dark:text-primary-300 border border-primary-500/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200'}`}>
+              <Link href="/admin/posts" onClick={() => setIsMobileMenuOpen(false)} className={`flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors ${isActive('/admin/posts') ? 'bg-primary-500/10 text-primary-700 dark:text-primary-300 border border-primary-500/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200'}`}>
                 <FileText className="w-5 h-5" />
                 All Articles
               </Link>
-              <Link href="/admin/users" className={`flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors ${isActive('/admin/users') ? 'bg-primary-500/10 text-primary-700 dark:text-primary-300 border border-primary-500/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200'}`}>
+              <Link href="/admin/users" onClick={() => setIsMobileMenuOpen(false)} className={`flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors ${isActive('/admin/users') ? 'bg-primary-500/10 text-primary-700 dark:text-primary-300 border border-primary-500/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200'}`}>
                 <Users className="w-5 h-5" />
                 Team & Roles
               </Link>
-              <Link href="/admin/analytics" className={`flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors ${isActive('/admin/analytics') ? 'bg-primary-500/10 text-primary-700 dark:text-primary-300 border border-primary-500/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200'}`}>
+              <Link href="/admin/analytics" onClick={() => setIsMobileMenuOpen(false)} className={`flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors ${isActive('/admin/analytics') ? 'bg-primary-500/10 text-primary-700 dark:text-primary-300 border border-primary-500/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200'}`}>
                 <BarChart className="w-5 h-5" />
                 Analytics
               </Link>
-              <Link href="/admin/settings" className={`flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors ${isActive('/admin/settings') ? 'bg-primary-500/10 text-primary-700 dark:text-primary-300 border border-primary-500/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200'}`}>
+              <Link href="/admin/settings" onClick={() => setIsMobileMenuOpen(false)} className={`flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors ${isActive('/admin/settings') ? 'bg-primary-500/10 text-primary-700 dark:text-primary-300 border border-primary-500/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200'}`}>
                 <Settings className="w-5 h-5" />
                 System Settings
               </Link>
-              <Link href="/admin/superadmin/notifications" className={`flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors ${isActive('/admin/superadmin/notifications') ? 'bg-primary-500/10 text-primary-700 dark:text-primary-300 border border-primary-500/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200'}`}>
+              <Link href="/admin/superadmin/notifications" onClick={() => setIsMobileMenuOpen(false)} className={`flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors ${isActive('/admin/superadmin/notifications') ? 'bg-primary-500/10 text-primary-700 dark:text-primary-300 border border-primary-500/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200'}`}>
                 <div className="relative flex-shrink-0">
                   <Bell className="w-5 h-5" />
                   {unreadCount > 0 && (
@@ -309,12 +309,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </button>
             <button 
               onClick={() => {
+                setIsMobileMenuOpen(false);
                 router.push('/');
                 setTimeout(() => {
                   logout();
                 }, 100);
               }}
-              className="flex items-center gap-2 w-full px-3 py-2 text-sm text-slate-500 hover:text-red-650 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-lg transition-colors"
+              className="flex items-center gap-2 w-full px-3 py-2 text-sm text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-lg transition-colors"
             >
               <LogOut className="w-4 h-4" />
               Sign Out
@@ -393,23 +394,23 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         
         <div className="flex-1 overflow-y-auto py-6">
           <nav className="space-y-1.5 px-4">
-            <Link href="/admin" className={navLinkClass('/admin')}>
+            <Link href="/admin" onClick={() => setIsMobileMenuOpen(false)} className={navLinkClass('/admin')}>
               <LayoutDashboard className="w-5 h-5" />
               Overview
             </Link>
-            <Link href="/admin/posts" className={navLinkClass('/admin/posts')}>
+            <Link href="/admin/posts" onClick={() => setIsMobileMenuOpen(false)} className={navLinkClass('/admin/posts')}>
               <FileText className="w-5 h-5" />
               Articles
             </Link>
-            <Link href="/admin/categories" className={navLinkClass('/admin/categories')}>
+            <Link href="/admin/categories" onClick={() => setIsMobileMenuOpen(false)} className={navLinkClass('/admin/categories')}>
               <Tag className="w-5 h-5" />
               Categories
             </Link>
-            <Link href="/admin/media" className={navLinkClass('/admin/media')}>
+            <Link href="/admin/media" onClick={() => setIsMobileMenuOpen(false)} className={navLinkClass('/admin/media')}>
               <ImageIcon className="w-5 h-5" />
               Media Library
             </Link>
-            <Link href="/admin/comments" className={navLinkClass('/admin/comments')}>
+            <Link href="/admin/comments" onClick={() => setIsMobileMenuOpen(false)} className={navLinkClass('/admin/comments')}>
               <MessageSquare className="w-5 h-5" />
               Comments
             </Link>

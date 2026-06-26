@@ -21,7 +21,7 @@ export default function AdminAnalyticsPage() {
   }, []);
 
   // Calculate dynamic stats from posts in the store
-  const totalPageViews = posts.reduce((sum, p) => sum + (p.views !== undefined ? p.views : 120), 0);
+  const totalPageViews = posts.reduce((sum, p) => sum + (p.views || 0), 0);
   const uniqueVisitors = posts.length > 0 ? Math.max(1, Math.floor(totalPageViews * 0.15)) : 0;
 
   const totalPageViewsFormatted = totalPageViews.toLocaleString('en-US');
