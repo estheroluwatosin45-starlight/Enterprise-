@@ -4,9 +4,11 @@ import {
   Shield, Activity, Layers, Database, Bell, CheckCircle, Clock, Trash2, XCircle
 } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useAdminStore } from '@/store/adminStore';
 
 export default function SuperAdminConsole() {
+  const router = useRouter();
   const users = useAdminStore((state) => state.users);
   const posts = useAdminStore((state) => state.posts);
   const comments = useAdminStore((state) => state.comments);
@@ -63,12 +65,12 @@ export default function SuperAdminConsole() {
               </p>
             </div>
           </div>
-          <Link 
-            href="/admin/superadmin/notifications"
-            className="px-4 py-2 bg-red-600 hover:bg-red-750 text-white rounded-xl text-xs font-bold transition-colors whitespace-nowrap shadow-sm text-center"
+          <button 
+            onClick={() => router.push('/admin/superadmin/notifications')}
+            className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold transition-colors whitespace-nowrap shadow-sm text-center cursor-pointer"
           >
             Review Now
-          </Link>
+          </button>
         </div>
       )}
 

@@ -7,31 +7,42 @@ import {
 import { Eye, Clock, Users, MousePointerClick } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
-
-const trafficData = [
-  { name: 'Jan', views: 850 },
-  { name: 'Feb', views: 1200 },
-  { name: 'Mar', views: 980 },
-  { name: 'Apr', views: 1750 },
-  { name: 'May', views: 2400 },
-  { name: 'Jun', views: 1950 },
-];
-
-const visitorData = [
-  { name: 'Desktop', value: 65 },
-  { name: 'Mobile', value: 25 },
-  { name: 'Tablet', value: 10 },
-];
+import { useAdminStore } from '@/store/adminStore';
 
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b'];
 
 export default function AdminAnalyticsPage() {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const posts = useAdminStore((state) => state.posts) || [];
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Calculate dynamic stats from posts in the store
+  const totalPageViews = posts.reduce((sum, p) => sum + (p.views !== undefined ? p.views : 120), 0);
+  const uniqueVisitors = posts.length > 0 ? Math.max(1, Math.floor(totalPageViews * 0.15)) : 0;
+
+  const totalPageViewsFormatted = totalPageViews.toLocaleString('en-US');
+  const uniqueVisitorsFormatted = uniqueVisitors >= 1000 
+    ? `${(uniqueVisitors / 1000).toFixed(1)}k` 
+    : uniqueVisitors.toLocaleString('en-US');
+
+  const trafficData = [
+    { name: 'Jan', views: Math.floor(totalPageViews * 0.08) },
+    { name: 'Feb', views: Math.floor(totalPageViews * 0.12) },
+    { name: 'Mar', views: Math.floor(totalPageViews * 0.10) },
+    { name: 'Apr', views: Math.floor(totalPageViews * 0.18) },
+    { name: 'May', views: Math.floor(totalPageViews * 0.25) },
+    { name: 'Jun', views: Math.floor(totalPageViews * 0.27) },
+  ];
+
+  const visitorData = [
+    { name: 'Desktop', value: posts.length > 0 ? 65 : 0 },
+    { name: 'Mobile', value: posts.length > 0 ? 25 : 0 },
+    { name: 'Tablet', value: posts.length > 0 ? 10 : 0 },
+  ];
 
   const isDark = mounted && resolvedTheme === 'dark';
   const gridColor = isDark ? '#334155' : '#e2e8f0';
@@ -49,10 +60,10 @@ export default function AdminAnalyticsPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: 'Total Page Views', value: '9,130', icon: <Eye className="w-5 h-5" /> },
-          { label: 'Unique Visitors', value: '1.2k', icon: <Users className="w-5 h-5" /> },
-          { label: 'Avg. Session Duration', value: '2m 45s', icon: <Clock className="w-5 h-5" /> },
-          { label: 'Bounce Rate', value: '41.2%', icon: <MousePointerClick className="w-5 h-5" /> },
+          { label: 'Total Page Views', value: totalPageViewsFormatted, icon: <Eye className="w-5 h-5" /> },
+          { label: 'Unique Visitors', value: uniqueVisitorsFormatted, icon: <Users className="w-5 h-5" /> },
+          { label: 'Avg. Session Duration', value: posts.length > 0 ? '2m 45s' : '0m 0s', icon: <Clock className="w-5 h-5" /> },
+          { label: 'Bounce Rate', value: posts.length > 0 ? '41.2%' : '0%', icon: <MousePointerClick className="w-5 h-5" /> },
         ].map((stat, i) => (
           <div key={i} className="glass rounded-xl p-5 border border-white/40 dark:border-slate-800/40">
             <div className="flex items-center gap-3 text-slate-500 dark:text-slate-400 mb-3">

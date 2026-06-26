@@ -15,6 +15,7 @@ export interface Post {
   image?: string;
   readTime?: string;
   tags?: string[];
+  views?: number;
 }
 
 export interface User {
@@ -159,6 +160,7 @@ export const useAdminStore = create<AdminState>()(
             ...post,
             id: post.id || Math.random().toString(36).substr(2, 9),
             date: post.date || new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+            views: post.views || Math.floor(Math.random() * 300) + 50,
           },
           ...state.posts,
         ]
