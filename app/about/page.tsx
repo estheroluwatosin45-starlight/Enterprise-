@@ -1,7 +1,19 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
+import { useAdminStore } from '@/store/adminStore';
 
 export default function AboutPage() {
+  const settings = useAdminStore((state) => state.settings);
+
+  const team = [
+    { name: settings?.ceoName || 'Babatunde Funmilayo', title: 'CEO & Founder', seed: settings?.ceoSeed || 'babatunde' },
+    { name: settings?.chiefEditorName || '', title: 'Chief Editor', seed: settings?.chiefEditorSeed || 'sarah' },
+    { name: settings?.leadArchitectName || '', title: 'Lead Architect', seed: settings?.leadArchitectSeed || 'david' },
+    { name: settings?.headOfDesignName || '', title: 'Head of Design', seed: settings?.headOfDesignSeed || 'elena' },
+  ].filter(member => member.name && member.name.trim() !== '');
+
   return (
     <div className="w-full">
       <div className="bg-slate-900 text-white py-20 text-center relative overflow-hidden">
@@ -34,19 +46,14 @@ export default function AboutPage() {
       <div className="bg-slate-50 py-20 border-t border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-display font-bold text-slate-900 mb-12">Meet the Leadership</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {[
-              { name: 'Marcus Doe', title: 'CEO & Founder', seed: 'marcus' },
-              { name: 'Sarah Chen', title: 'Chief Editor', seed: 'sarah' },
-              { name: 'David Kim', title: 'Lead Architect', seed: 'david' },
-              { name: 'Elena Rivers', title: 'Head of Design', seed: 'elena' },
-            ].map(member => (
-              <div key={member.name} className="glass p-6 rounded-2xl flex flex-col items-center">
-                <div className="w-32 h-32 rounded-full overflow-hidden relative mb-4 shadow-md">
+          <div className="flex flex-wrap justify-center gap-8">
+            {team.map(member => (
+              <div key={member.name} className="glass p-6 rounded-2xl flex flex-col items-center w-full max-w-[280px] border border-white/40 dark:border-slate-800/40">
+                <div className="w-32 h-32 rounded-full overflow-hidden relative mb-4 shadow-md bg-slate-100">
                    <Image src={`https://picsum.photos/seed/${member.seed}/300/300`} alt={member.name} fill className="object-cover" referrerPolicy="no-referrer" />
                 </div>
                 <h3 className="font-bold text-lg text-slate-900">{member.name}</h3>
-                <p className="text-primary-600">{member.title}</p>
+                <p className="text-primary-600 text-sm font-semibold mt-1">{member.title}</p>
               </div>
             ))}
           </div>

@@ -1,7 +1,8 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { 
-  Shield, Activity, Layers, Database, Bell, CheckCircle, Clock, Trash2, XCircle
+  Shield, Activity, Layers, Database, Bell, CheckCircle, Clock, Trash2, XCircle, Save, Users
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -18,6 +19,50 @@ export default function SuperAdminConsole() {
   const approvePost = useAdminStore((state) => state.approvePost);
   const deletePost = useAdminStore((state) => state.deletePost);
   const markNotificationRead = useAdminStore((state) => state.markNotificationRead);
+  
+  const settings = useAdminStore((state) => state.settings);
+  const updateSettings = useAdminStore((state) => state.updateSettings);
+
+  const [ceoName, setCeoName] = useState('');
+  const [ceoSeed, setCeoSeed] = useState('');
+  const [chiefEditorName, setChiefEditorName] = useState('');
+  const [chiefEditorSeed, setChiefEditorSeed] = useState('');
+  const [leadArchitectName, setLeadArchitectName] = useState('');
+  const [leadArchitectSeed, setLeadArchitectSeed] = useState('');
+  const [headOfDesignName, setHeadOfDesignName] = useState('');
+  const [headOfDesignSeed, setHeadOfDesignSeed] = useState('');
+  const [showToast, setShowToast] = useState(false);
+
+  useEffect(() => {
+    if (settings) {
+      setCeoName(settings.ceoName || '');
+      setCeoSeed(settings.ceoSeed || 'babatunde');
+      setChiefEditorName(settings.chiefEditorName || '');
+      setChiefEditorSeed(settings.chiefEditorSeed || 'sarah');
+      setLeadArchitectName(settings.leadArchitectName || '');
+      setLeadArchitectSeed(settings.leadArchitectSeed || 'david');
+      setHeadOfDesignName(settings.headOfDesignName || '');
+      setHeadOfDesignSeed(settings.headOfDesignSeed || 'elena');
+    }
+  }, [settings]);
+
+  const handleUpdateLeadership = (e: React.FormEvent) => {
+    e.preventDefault();
+    updateSettings({
+      ceoName,
+      ceoSeed,
+      chiefEditorName,
+      chiefEditorSeed,
+      leadArchitectName,
+      leadArchitectSeed,
+      headOfDesignName,
+      headOfDesignSeed,
+    });
+    setShowToast(true);
+    setTimeout(() => {
+      setShowToast(false);
+    }, 3000);
+  };
 
   const unreadPostNotifications = notifications.filter(n => !n.read && n.type === 'review_post' && n.postId);
   const pendingPosts = posts.filter(p => unreadPostNotifications.some(n => n.postId === p.id));
@@ -236,6 +281,142 @@ export default function SuperAdminConsole() {
             )}
           </div>
         </div>
+      </div>
+
+      {/* Success Toast */}
+      {showToast && (
+        <div className="fixed top-20 right-8 z-50 flex items-center gap-2 bg-emerald-500 text-white px-4 py-3 rounded-xl shadow-lg border border-emerald-400/35 transition-all animate-bounce">
+          <CheckCircle className="w-5 h-5" />
+          <span className="font-semibold text-sm">Leadership updated successfully!</span>
+        </div>
+      )}
+
+      {/* Leadership Team Management */}
+      <div className="glass rounded-2xl overflow-hidden border border-white/20 dark:border-slate-800/40 mt-12 bg-white/40 dark:bg-slate-900/40">
+        <div className="border-b border-white/40 dark:border-slate-850 px-6 py-4 bg-white/20 dark:bg-slate-900/20 flex items-center gap-2">
+          <Users className="w-5 h-5 text-primary-500" />
+          <h2 className="font-bold text-slate-900 dark:text-white">Leadership Team Management</h2>
+        </div>
+        <form onSubmit={handleUpdateLeadership} className="p-6 space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            {/* CEO & Founder */}
+            <div className="space-y-4 p-4 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30">
+              <h3 className="font-semibold text-sm text-primary-600 dark:text-primary-400">CEO / Founder</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-500 mb-1.5">Name</label>
+                  <input 
+                    type="text" 
+                    value={ceoName}
+                    onChange={(e) => setCeoName(e.target.value)}
+                    placeholder="E.g. Babatunde Funmilayo"
+                    className="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/50 text-xs font-medium text-slate-900 dark:text-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-500 mb-1.5">Avatar Image Keyword</label>
+                  <input 
+                    type="text" 
+                    value={ceoSeed}
+                    onChange={(e) => setCeoSeed(e.target.value)}
+                    placeholder="E.g. babatunde"
+                    className="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/50 text-xs font-medium text-slate-900 dark:text-white"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Chief Editor */}
+            <div className="space-y-4 p-4 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30">
+              <h3 className="font-semibold text-sm text-primary-600 dark:text-primary-400">Chief Editor</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-500 mb-1.5">Name</label>
+                  <input 
+                    type="text" 
+                    value={chiefEditorName}
+                    onChange={(e) => setChiefEditorName(e.target.value)}
+                    placeholder="E.g. Sarah Chen"
+                    className="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/50 text-xs font-medium text-slate-900 dark:text-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-500 mb-1.5">Avatar Image Keyword</label>
+                  <input 
+                    type="text" 
+                    value={chiefEditorSeed}
+                    onChange={(e) => setChiefEditorSeed(e.target.value)}
+                    placeholder="E.g. sarah"
+                    className="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/50 text-xs font-medium text-slate-900 dark:text-white"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Lead Architect */}
+            <div className="space-y-4 p-4 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30">
+              <h3 className="font-semibold text-sm text-primary-600 dark:text-primary-400">Lead Architect</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-500 mb-1.5">Name</label>
+                  <input 
+                    type="text" 
+                    value={leadArchitectName}
+                    onChange={(e) => setLeadArchitectName(e.target.value)}
+                    placeholder="E.g. David Kim"
+                    className="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/50 text-xs font-medium text-slate-900 dark:text-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-500 mb-1.5">Avatar Image Keyword</label>
+                  <input 
+                    type="text" 
+                    value={leadArchitectSeed}
+                    onChange={(e) => setLeadArchitectSeed(e.target.value)}
+                    placeholder="E.g. david"
+                    className="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/50 text-xs font-medium text-slate-900 dark:text-white"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Head of Design */}
+            <div className="space-y-4 p-4 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30">
+              <h3 className="font-semibold text-sm text-primary-600 dark:text-primary-400">Head of Design</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-500 mb-1.5">Name</label>
+                  <input 
+                    type="text" 
+                    value={headOfDesignName}
+                    onChange={(e) => setHeadOfDesignName(e.target.value)}
+                    placeholder="E.g. Elena Rivers"
+                    className="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/50 text-xs font-medium text-slate-900 dark:text-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-500 mb-1.5">Avatar Image Keyword</label>
+                  <input 
+                    type="text" 
+                    value={headOfDesignSeed}
+                    onChange={(e) => setHeadOfDesignSeed(e.target.value)}
+                    placeholder="E.g. elena"
+                    className="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/50 text-xs font-medium text-slate-900 dark:text-white"
+                  />
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <div className="flex justify-end border-t border-slate-100 dark:border-slate-800 pt-4">
+            <button type="submit" className="bg-primary-600 hover:bg-primary-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-colors flex items-center gap-2 shadow-sm cursor-pointer hover:-translate-y-0.5 duration-300">
+              <Save className="w-4 h-4" />
+              Save Leadership Team
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );

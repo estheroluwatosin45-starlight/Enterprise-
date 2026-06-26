@@ -60,6 +60,14 @@ export interface SiteSettings {
   siteDescription: string;
   metaTitle: string;
   ogGuidelines: string;
+  ceoName?: string;
+  chiefEditorName?: string;
+  leadArchitectName?: string;
+  headOfDesignName?: string;
+  ceoSeed?: string;
+  chiefEditorSeed?: string;
+  leadArchitectSeed?: string;
+  headOfDesignSeed?: string;
 }
 
 export interface Notification {
@@ -125,7 +133,15 @@ const getInitialState = () => {
     supportEmail: 'support@enterprisecms.com',
     siteDescription: 'A premium, high-performance content management system.',
     metaTitle: 'Enterprise CMS | Premium Publishing Platform',
-    ogGuidelines: "Read the latest articles from the industry's leading authors."
+    ogGuidelines: "Read the latest articles from the industry's leading authors.",
+    ceoName: 'Babatunde Funmilayo',
+    chiefEditorName: '',
+    leadArchitectName: '',
+    headOfDesignName: '',
+    ceoSeed: 'babatunde',
+    chiefEditorSeed: 'sarah',
+    leadArchitectSeed: 'david',
+    headOfDesignSeed: 'elena',
   };
 
   return {
