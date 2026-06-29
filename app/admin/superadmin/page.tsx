@@ -24,6 +24,7 @@ export default function SuperAdminConsole() {
   const settings = useAdminStore((state) => state.settings);
   const updateSettings = useAdminStore((state) => state.updateSettings);
   const clearData = useAdminStore((state) => state.clearData);
+  const followers = useAdminStore((state) => state.followers) || [];
 
   const totalPageViews = posts.reduce((sum, p) => sum + (p.views || 0), 0);
   const uniqueVisitors = posts.length > 0 ? Math.max(1, Math.floor(totalPageViews * 0.15)) : 0;
@@ -402,6 +403,53 @@ export default function SuperAdminConsole() {
           <span className="font-semibold text-sm">Leadership updated successfully!</span>
         </div>
       )}
+
+      {/* Registered Followers */}
+      <div className="glass rounded-2xl overflow-hidden border border-white/20 dark:border-slate-800/40 mt-12 bg-white/40 dark:bg-slate-900/40">
+        <div className="border-b border-white/40 dark:border-slate-850 px-6 py-4 bg-white/20 dark:bg-slate-900/20 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Users className="w-5 h-5 text-primary-500" />
+            <h2 className="font-bold text-slate-900 dark:text-white">Registered Followers ({followers.length})</h2>
+          </div>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm text-slate-600 dark:text-slate-350">
+            <thead className="bg-white/30 dark:bg-slate-900/30 text-slate-500 dark:text-slate-400 uppercase font-semibold text-xs border-b border-white/40 dark:border-slate-800/40">
+              <tr>
+                <th className="px-6 py-4">Name</th>
+                <th className="px-6 py-4">Email</th>
+                <th className="px-6 py-4">Saved Bookmarks</th>
+                <th className="px-6 py-4">Role</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800 bg-white/5">
+              {followers.map((follower) => (
+                <tr key={follower.id} className="hover:bg-slate-50/20 dark:hover:bg-slate-800/20 transition-colors">
+                  <td className="px-6 py-4 font-semibold text-slate-900 dark:text-white">{follower.name}</td>
+                  <td className="px-6 py-4">{follower.email}</td>
+                  <td className="px-6 py-4">
+                    <span className="bg-primary-50 dark:bg-primary-950/20 text-primary-600 dark:text-primary-400 px-2 py-0.5 rounded text-xs font-semibold">
+                      {follower.bookmarks?.length || 0} bookmark{follower.bookmarks?.length === 1 ? '' : 's'}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-2 py-0.5 rounded text-xs font-semibold">
+                      Public Reader
+                    </span>
+                  </td>
+                </tr>
+              ))}
+              {followers.length === 0 && (
+                <tr>
+                  <td colSpan={4} className="px-6 py-8 text-center text-slate-500 dark:text-slate-400">
+                    No public followers have registered yet.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
 
       {/* Leadership Team Management */}
       <div className="glass rounded-2xl overflow-hidden border border-white/20 dark:border-slate-800/40 mt-12 bg-white/40 dark:bg-slate-900/40">

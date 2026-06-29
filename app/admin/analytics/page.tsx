@@ -4,7 +4,7 @@ import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, Legend
 } from 'recharts';
-import { Eye, Clock, Users, MousePointerClick } from 'lucide-react';
+import { Eye, Clock, Users, MousePointerClick, Bookmark } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 import { useAdminStore } from '@/store/adminStore';
@@ -16,6 +16,7 @@ export default function AdminAnalyticsPage() {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const posts = useAdminStore((state) => state.posts) || [];
+  const followers = useAdminStore((state) => state.followers) || [];
 
   useEffect(() => {
     setMounted(true);
@@ -24,6 +25,7 @@ export default function AdminAnalyticsPage() {
   // Calculate dynamic stats from posts in the store
   const totalPageViews = posts.reduce((sum, p) => sum + (p.views || 0), 0);
   const uniqueVisitors = posts.length > 0 ? Math.max(1, Math.floor(totalPageViews * 0.15)) : 0;
+  const totalBookmarks = followers.reduce((sum, f) => sum + (f.bookmarks?.length || 0), 0);
 
   const totalPageViewsFormatted = totalPageViews.toLocaleString('en-US');
   const uniqueVisitorsFormatted = uniqueVisitors >= 1000 
@@ -64,8 +66,8 @@ export default function AdminAnalyticsPage() {
         {[
           { label: 'Total Page Views', value: totalPageViewsFormatted, icon: <Eye className="w-5 h-5" />, href: '/admin/posts' },
           { label: 'Unique Visitors', value: uniqueVisitorsFormatted, icon: <Users className="w-5 h-5" />, href: '/admin/users' },
-          { label: 'Avg. Session Duration', value: posts.length > 0 ? '2m 45s' : '0m 0s', icon: <Clock className="w-5 h-5" />, href: '/admin/posts' },
-          { label: 'Bounce Rate', value: posts.length > 0 ? '41.2%' : '0%', icon: <MousePointerClick className="w-5 h-5" />, href: '/admin/comments' },
+          { label: 'Total Followers', value: followers.length.toString(), icon: <Users className="w-5 h-5" />, href: '/admin/superadmin' },
+          { label: 'Saved Bookmarks', value: totalBookmarks.toString(), icon: <Bookmark className="w-5 h-5" />, href: '/admin/superadmin' },
         ].map((stat, i) => (
           <Link href={stat.href} key={i} className="glass rounded-xl p-5 border border-white/40 dark:border-slate-800/40 hover:-translate-y-0.5 transition-transform duration-300 block hover:shadow-md cursor-pointer text-left">
             <div className="flex items-center gap-3 text-slate-500 dark:text-slate-400 mb-3">
@@ -144,6 +146,47 @@ export default function AdminAnalyticsPage() {
               </PieChart>
             </ResponsiveContainer>
           </div>
+        </div>
+      </div>
+
+      {/* Public Followers List */}
+      <div className="glass rounded-xl overflow-hidden border border-white/40 dark:border-slate-800/40 bg-white/40 dark:bg-slate-900/40 mt-8">
+        <div className="border-b border-white/40 dark:border-slate-850 px-6 py-4 bg-white/20 dark:bg-slate-900/20 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Users className="w-5 h-5 text-primary-500" />
+            <h2 className="font-bold text-slate-900 dark:text-white">Public Followers ({followers.length})</h2>
+          </div>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm text-slate-600 dark:text-slate-355">
+            <thead className="bg-white/30 dark:bg-slate-900/30 text-slate-500 dark:text-slate-400 uppercase font-semibold text-xs border-b border-white/40 dark:border-slate-800/40">
+              <tr>
+                <th className="px-6 py-4">Name</th>
+                <th className="px-6 py-4">Email</th>
+                <th className="px-6 py-4">Saved Bookmarks</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800 bg-white/5">
+              {followers.map((follower) => (
+                <tr key={follower.id} className="hover:bg-slate-50/20 dark:hover:bg-slate-800/20 transition-colors">
+                  <td className="px-6 py-4 font-semibold text-slate-900 dark:text-white">{follower.name}</td>
+                  <td className="px-6 py-4">{follower.email}</td>
+                  <td className="px-6 py-4">
+                    <span className="bg-primary-50 dark:bg-primary-950/20 text-primary-600 dark:text-primary-400 px-2 py-0.5 rounded text-xs font-semibold">
+                      {follower.bookmarks?.length || 0} saved bookmark{follower.bookmarks?.length === 1 ? '' : 's'}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+              {followers.length === 0 && (
+                <tr>
+                  <td colSpan={3} className="px-6 py-8 text-center text-slate-500 dark:text-slate-400">
+                    No followers have registered yet.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
