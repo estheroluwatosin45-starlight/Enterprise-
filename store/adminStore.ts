@@ -363,6 +363,55 @@ export const useAdminStore = create<AdminState>()((set) => ({
             settings = await loadFromSupabase('cms_settings', initialData.settings);
             notifications = await loadFromSupabase('cms_notifications', initialData.notifications);
             media = await loadFromSupabase('cms_media', initialData.media);
+
+            // Subscribe to real-time changes on the settings table
+            supabase
+              .channel('settings-realtime')
+              .on(
+                'postgres_changes',
+                {
+                  event: '*',
+                  schema: 'public',
+                  table: 'settings',
+                },
+                (payload) => {
+                  const updatedRow = payload.new as { key: string; value: any };
+                  if (updatedRow && updatedRow.key) {
+                    const currentState = useAdminStore.getState();
+                    
+                    if (updatedRow.key === 'cms_posts') {
+                      if (JSON.stringify(currentState.posts) !== JSON.stringify(updatedRow.value)) {
+                        set({ posts: updatedRow.value });
+                      }
+                    } else if (updatedRow.key === 'cms_categories') {
+                      if (JSON.stringify(currentState.categories) !== JSON.stringify(updatedRow.value)) {
+                        set({ categories: updatedRow.value });
+                      }
+                    } else if (updatedRow.key === 'cms_comments') {
+                      if (JSON.stringify(currentState.comments) !== JSON.stringify(updatedRow.value)) {
+                        set({ comments: updatedRow.value });
+                      }
+                    } else if (updatedRow.key === 'cms_users') {
+                      if (JSON.stringify(currentState.users) !== JSON.stringify(updatedRow.value)) {
+                        set({ users: updatedRow.value });
+                      }
+                    } else if (updatedRow.key === 'cms_settings') {
+                      if (JSON.stringify(currentState.settings) !== JSON.stringify(updatedRow.value)) {
+                        set({ settings: updatedRow.value });
+                      }
+                    } else if (updatedRow.key === 'cms_notifications') {
+                      if (JSON.stringify(currentState.notifications) !== JSON.stringify(updatedRow.value)) {
+                        set({ notifications: updatedRow.value });
+                      }
+                    } else if (updatedRow.key === 'cms_media') {
+                      if (JSON.stringify(currentState.media) !== JSON.stringify(updatedRow.value)) {
+                        set({ media: updatedRow.value });
+                      }
+                    }
+                  }
+                }
+              )
+              .subscribe();
           } else {
             posts = loadFromLocalStorage('cms_posts', initialData.posts);
             categories = loadFromLocalStorage('cms_categories', initialData.categories);

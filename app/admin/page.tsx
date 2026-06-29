@@ -31,10 +31,10 @@ export default function AdminDashboardPage() {
     : uniqueVisitors.toLocaleString('en-US');
 
   const stats = [
-    { label: 'Total Posts', value: posts.length.toString(), icon: <FileText className="w-6 h-6" />, change: posts.length ? '+12%' : '0%', trend: 'up' },
-    { label: 'Total Users', value: users.length.toString(), icon: <Users className="w-6 h-6" />, change: users.length ? '+4%' : '0%', trend: 'up' },
-    { label: 'Total Visitors', value: uniqueVisitorsFormatted, icon: <Eye className="w-6 h-6" />, change: uniqueVisitors > 0 ? '+25%' : '0%', trend: 'up' },
-    { label: 'Comments', value: comments.length.toString(), icon: <MessageSquare className="w-6 h-6" />, change: comments.length ? '+8%' : '0%', trend: 'up' },
+    { label: 'Total Posts', value: posts.length.toString(), icon: <FileText className="w-6 h-6" />, change: posts.length ? '+12%' : '0%', trend: 'up', href: '/admin/posts' },
+    { label: 'Total Users', value: users.length.toString(), icon: <Users className="w-6 h-6" />, change: users.length ? '+4%' : '0%', trend: 'up', href: '/admin/users' },
+    { label: 'Total Visitors', value: uniqueVisitorsFormatted, icon: <Eye className="w-6 h-6" />, change: uniqueVisitors > 0 ? '+25%' : '0%', trend: 'up', href: '/admin/analytics' },
+    { label: 'Comments', value: comments.length.toString(), icon: <MessageSquare className="w-6 h-6" />, change: comments.length ? '+8%' : '0%', trend: 'up', href: '/admin/comments' },
   ];
 
 
@@ -43,7 +43,7 @@ export default function AdminDashboardPage() {
       {/* Overview Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat, i) => (
-          <div key={i} className="glass p-6 rounded-2xl border border-white/20 dark:border-slate-800/40 bg-white/40 dark:bg-slate-900/40">
+          <Link href={stat.href} key={i} className="glass p-6 rounded-2xl border border-white/20 dark:border-slate-800/40 bg-white/40 dark:bg-slate-900/40 hover:-translate-y-0.5 transition-transform duration-300 block hover:shadow-md cursor-pointer text-left">
             <div className="flex items-center justify-between mb-4">
               <div className="w-12 h-12 bg-primary-100 dark:bg-primary-950/40 text-primary-600 dark:text-primary-400 rounded-xl flex items-center justify-center border border-primary-200/50 dark:border-primary-900/30">
                 {stat.icon}
@@ -55,7 +55,7 @@ export default function AdminDashboardPage() {
             </div>
             <h3 className="text-slate-500 dark:text-slate-400 text-sm font-medium">{stat.label}</h3>
             <p className="text-3xl font-bold font-display text-slate-900 dark:text-white mt-1">{stat.value}</p>
-          </div>
+          </Link>
         ))}
       </div>
 

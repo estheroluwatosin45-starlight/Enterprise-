@@ -8,6 +8,7 @@ import { Eye, Clock, Users, MousePointerClick } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 import { useAdminStore } from '@/store/adminStore';
+import Link from 'next/link';
 
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b'];
 
@@ -58,14 +59,15 @@ export default function AdminAnalyticsPage() {
         <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Detailed performance metrics for your publication.</p>
       </div>
 
+      {/* Overview Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: 'Total Page Views', value: totalPageViewsFormatted, icon: <Eye className="w-5 h-5" /> },
-          { label: 'Unique Visitors', value: uniqueVisitorsFormatted, icon: <Users className="w-5 h-5" /> },
-          { label: 'Avg. Session Duration', value: posts.length > 0 ? '2m 45s' : '0m 0s', icon: <Clock className="w-5 h-5" /> },
-          { label: 'Bounce Rate', value: posts.length > 0 ? '41.2%' : '0%', icon: <MousePointerClick className="w-5 h-5" /> },
+          { label: 'Total Page Views', value: totalPageViewsFormatted, icon: <Eye className="w-5 h-5" />, href: '/admin/posts' },
+          { label: 'Unique Visitors', value: uniqueVisitorsFormatted, icon: <Users className="w-5 h-5" />, href: '/admin/users' },
+          { label: 'Avg. Session Duration', value: posts.length > 0 ? '2m 45s' : '0m 0s', icon: <Clock className="w-5 h-5" />, href: '/admin/posts' },
+          { label: 'Bounce Rate', value: posts.length > 0 ? '41.2%' : '0%', icon: <MousePointerClick className="w-5 h-5" />, href: '/admin/comments' },
         ].map((stat, i) => (
-          <div key={i} className="glass rounded-xl p-5 border border-white/40 dark:border-slate-800/40">
+          <Link href={stat.href} key={i} className="glass rounded-xl p-5 border border-white/40 dark:border-slate-800/40 hover:-translate-y-0.5 transition-transform duration-300 block hover:shadow-md cursor-pointer text-left">
             <div className="flex items-center gap-3 text-slate-500 dark:text-slate-400 mb-3">
               <div className="p-2 bg-primary-50 dark:bg-primary-950/30 rounded-lg text-primary-600 dark:text-primary-400">
                 {stat.icon}
@@ -75,7 +77,7 @@ export default function AdminAnalyticsPage() {
             <div className="flex items-end justify-between">
               <p className="text-3xl font-bold font-display text-slate-900 dark:text-white">{stat.value}</p>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
       

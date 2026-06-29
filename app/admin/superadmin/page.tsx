@@ -23,6 +23,7 @@ export default function SuperAdminConsole() {
   
   const settings = useAdminStore((state) => state.settings);
   const updateSettings = useAdminStore((state) => state.updateSettings);
+  const clearData = useAdminStore((state) => state.clearData);
 
   const totalPageViews = posts.reduce((sum, p) => sum + (p.views || 0), 0);
   const uniqueVisitors = posts.length > 0 ? Math.max(1, Math.floor(totalPageViews * 0.15)) : 0;
@@ -568,6 +569,33 @@ export default function SuperAdminConsole() {
             </button>
           </div>
         </form>
+      </div>
+
+      {/* Database Reset Management */}
+      <div className="glass rounded-2xl overflow-hidden border border-white/20 dark:border-slate-800/40 mt-12 bg-white/40 dark:bg-slate-900/40">
+        <div className="border-b border-white/40 dark:border-slate-850 px-6 py-4 bg-white/20 dark:bg-slate-900/20 flex items-center gap-2">
+          <Trash2 className="w-5 h-5 text-red-500" />
+          <h2 className="font-bold text-slate-900 dark:text-white">Database Management</h2>
+        </div>
+        <div className="p-6 space-y-4">
+          <p className="text-sm text-slate-600 dark:text-slate-400">
+            If you want to clear all existing demo data (including posts, comments, categories, and media assets) to start fresh, you can use the button below. This will wipe out all content on Supabase and LocalStorage.
+          </p>
+          <div className="flex justify-start">
+            <button 
+              onClick={() => {
+                if (confirm("Are you sure you want to delete all posts, categories, comments, media, and notifications? This will wipe the database and cannot be undone.")) {
+                  clearData();
+                  alert("All demo and local data has been successfully cleared!");
+                }
+              }}
+              className="bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-colors flex items-center gap-2 shadow-sm cursor-pointer hover:-translate-y-0.5 duration-300"
+            >
+              <Trash2 className="w-4 h-4" />
+              Wipe Database & Clear Demo Data
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
