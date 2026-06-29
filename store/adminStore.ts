@@ -2,6 +2,47 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { supabase } from '@/lib/supabase';
+
+// Supabase database integration helpers
+const loadFromSupabase = async (key: string, defaultValue: any) => {
+  if (!supabase) return defaultValue;
+  try {
+    const { data, error } = await supabase
+      .from('settings')
+      .select('value')
+      .eq('key', key)
+      .single();
+    
+    if (error) {
+      if (error.code === 'PGRST116') {
+        // Record doesn't exist yet, insert the default seed value
+        await supabase.from('settings').insert({ key, value: defaultValue });
+        return defaultValue;
+      }
+      console.warn(`Supabase load error for ${key}:`, error.message);
+      return defaultValue;
+    }
+    return data?.value ?? defaultValue;
+  } catch (err) {
+    console.warn(`Supabase fetch failed for ${key}:`, err);
+    return defaultValue;
+  }
+};
+
+const saveToSupabase = async (key: string, value: any) => {
+  if (!supabase) return;
+  try {
+    const { error } = await supabase
+      .from('settings')
+      .upsert({ key, value }, { onConflict: 'key' });
+    if (error) {
+      console.warn(`Supabase save error for ${key}:`, error.message);
+    }
+  } catch (err) {
+    console.warn(`Supabase save failed for ${key}:`, err);
+  }
+};
 
 export interface Post {
   id: string;
@@ -114,6 +155,7 @@ interface AdminState {
   addNotification: (notification: Omit<Notification, 'id' | 'date' | 'read'>) => void;
   markNotificationRead: (id: string) => void;
   clearAllNotifications: () => void;
+  initializeStore: () => Promise<void>;
 }
 
 // Initial seed data helper
@@ -280,6 +322,30 @@ export const useAdminStore = create<AdminState>()(
         notifications: (state.notifications || []).map(n => n.id === id ? { ...n, read: true } : n)
       })),
       clearAllNotifications: () => set({ notifications: [] }),
+      initializeStore: async () => {
+        if (!supabase) return;
+        try {
+          const posts = await loadFromSupabase('cms_posts', initialData.posts);
+          const categories = await loadFromSupabase('cms_categories', initialData.categories);
+          const comments = await loadFromSupabase('cms_comments', initialData.comments);
+          const users = await loadFromSupabase('cms_users', initialData.users);
+          const settings = await loadFromSupabase('cms_settings', initialData.settings);
+          const notifications = await loadFromSupabase('cms_notifications', initialData.notifications);
+          const media = await loadFromSupabase('cms_media', initialData.media);
+
+          set({
+            posts,
+            categories,
+            comments,
+            users,
+            settings,
+            notifications,
+            media,
+          });
+        } catch (err) {
+          console.error('Failed to initialize Supabase store:', err);
+        }
+      },
     }),
     {
       name: 'enterprise-cms-storage-v4',
@@ -290,4 +356,45 @@ export const useAdminStore = create<AdminState>()(
     }
   )
 );
+
+if (typeof window !== 'undefined') {
+  let prevPosts = useAdminStore.getState().posts;
+  let prevCategories = useAdminStore.getState().categories;
+  let prevComments = useAdminStore.getState().comments;
+  let prevUsers = useAdminStore.getState().users;
+  let prevSettings = useAdminStore.getState().settings;
+  let prevNotifications = useAdminStore.getState().notifications;
+  let prevMedia = useAdminStore.getState().media;
+
+  useAdminStore.subscribe((state) => {
+    if (state.posts !== prevPosts) {
+      prevPosts = state.posts;
+      saveToSupabase('cms_posts', state.posts);
+    }
+    if (state.categories !== prevCategories) {
+      prevCategories = state.categories;
+      saveToSupabase('cms_categories', state.categories);
+    }
+    if (state.comments !== prevComments) {
+      prevComments = state.comments;
+      saveToSupabase('cms_comments', state.comments);
+    }
+    if (state.users !== prevUsers) {
+      prevUsers = state.users;
+      saveToSupabase('cms_users', state.users);
+    }
+    if (state.settings !== prevSettings) {
+      prevSettings = state.settings;
+      saveToSupabase('cms_settings', state.settings);
+    }
+    if (state.notifications !== prevNotifications) {
+      prevNotifications = state.notifications;
+      saveToSupabase('cms_notifications', state.notifications);
+    }
+    if (state.media !== prevMedia) {
+      prevMedia = state.media;
+      saveToSupabase('cms_media', state.media);
+    }
+  });
+}
 
