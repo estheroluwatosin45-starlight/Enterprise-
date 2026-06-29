@@ -32,24 +32,32 @@ export default function SuperAdminConsole() {
 
   const [ceoName, setCeoName] = useState('');
   const [ceoSeed, setCeoSeed] = useState('');
+  const [ceoImage, setCeoImage] = useState('');
   const [chiefEditorName, setChiefEditorName] = useState('');
   const [chiefEditorSeed, setChiefEditorSeed] = useState('');
+  const [chiefEditorImage, setChiefEditorImage] = useState('');
   const [leadArchitectName, setLeadArchitectName] = useState('');
   const [leadArchitectSeed, setLeadArchitectSeed] = useState('');
+  const [leadArchitectImage, setLeadArchitectImage] = useState('');
   const [headOfDesignName, setHeadOfDesignName] = useState('');
   const [headOfDesignSeed, setHeadOfDesignSeed] = useState('');
+  const [headOfDesignImage, setHeadOfDesignImage] = useState('');
   const [showToast, setShowToast] = useState(false);
 
   useEffect(() => {
     if (settings) {
       setCeoName(settings.ceoName || '');
       setCeoSeed(settings.ceoSeed || 'babatunde');
+      setCeoImage(settings.ceoImage || '');
       setChiefEditorName(settings.chiefEditorName || '');
       setChiefEditorSeed(settings.chiefEditorSeed || 'sarah');
+      setChiefEditorImage(settings.chiefEditorImage || '');
       setLeadArchitectName(settings.leadArchitectName || '');
       setLeadArchitectSeed(settings.leadArchitectSeed || 'david');
+      setLeadArchitectImage(settings.leadArchitectImage || '');
       setHeadOfDesignName(settings.headOfDesignName || '');
       setHeadOfDesignSeed(settings.headOfDesignSeed || 'elena');
+      setHeadOfDesignImage(settings.headOfDesignImage || '');
     }
   }, [settings]);
 
@@ -58,12 +66,16 @@ export default function SuperAdminConsole() {
     updateSettings({
       ceoName,
       ceoSeed,
+      ceoImage,
       chiefEditorName,
       chiefEditorSeed,
+      chiefEditorImage,
       leadArchitectName,
       leadArchitectSeed,
+      leadArchitectImage,
       headOfDesignName,
       headOfDesignSeed,
+      headOfDesignImage,
     });
     setShowToast(true);
     setTimeout(() => {
@@ -424,6 +436,16 @@ export default function SuperAdminConsole() {
                   />
                 </div>
               </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 mb-1.5">Avatar Image URL (Optional)</label>
+                <input 
+                  type="text" 
+                  value={ceoImage}
+                  onChange={(e) => setCeoImage(e.target.value)}
+                  placeholder="Paste direct link to image (e.g. https://...)"
+                  className="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/50 text-xs font-medium text-slate-900 dark:text-white"
+                />
+              </div>
             </div>
 
             {/* Chief Editor */}
@@ -450,6 +472,16 @@ export default function SuperAdminConsole() {
                     className="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/50 text-xs font-medium text-slate-900 dark:text-white"
                   />
                 </div>
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 mb-1.5">Avatar Image URL (Optional)</label>
+                <input 
+                  type="text" 
+                  value={chiefEditorImage}
+                  onChange={(e) => setChiefEditorImage(e.target.value)}
+                  placeholder="Paste direct link to image (e.g. https://...)"
+                  className="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/50 text-xs font-medium text-slate-900 dark:text-white"
+                />
               </div>
             </div>
 
@@ -478,6 +510,16 @@ export default function SuperAdminConsole() {
                   />
                 </div>
               </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 mb-1.5">Avatar Image URL (Optional)</label>
+                <input 
+                  type="text" 
+                  value={leadArchitectImage}
+                  onChange={(e) => setLeadArchitectImage(e.target.value)}
+                  placeholder="Paste direct link to image (e.g. https://...)"
+                  className="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/50 text-xs font-medium text-slate-900 dark:text-white"
+                />
+              </div>
             </div>
 
             {/* Head of Design */}
@@ -504,6 +546,16 @@ export default function SuperAdminConsole() {
                     className="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/50 text-xs font-medium text-slate-900 dark:text-white"
                   />
                 </div>
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 mb-1.5">Avatar Image URL (Optional)</label>
+                <input 
+                  type="text" 
+                  value={headOfDesignImage}
+                  onChange={(e) => setHeadOfDesignImage(e.target.value)}
+                  placeholder="Paste direct link to image (e.g. https://...)"
+                  className="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/50 text-xs font-medium text-slate-900 dark:text-white"
+                />
               </div>
             </div>
 

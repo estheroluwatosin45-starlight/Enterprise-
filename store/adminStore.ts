@@ -130,6 +130,10 @@ export interface SiteSettings {
   chiefEditorSeed?: string;
   leadArchitectSeed?: string;
   headOfDesignSeed?: string;
+  ceoImage?: string;
+  chiefEditorImage?: string;
+  leadArchitectImage?: string;
+  headOfDesignImage?: string;
 }
 
 export interface Notification {
@@ -206,6 +210,10 @@ const getInitialState = () => {
     chiefEditorSeed: 'sarah',
     leadArchitectSeed: 'david',
     headOfDesignSeed: 'elena',
+    ceoImage: '',
+    chiefEditorImage: '',
+    leadArchitectImage: '',
+    headOfDesignImage: '',
   };
 
   return {

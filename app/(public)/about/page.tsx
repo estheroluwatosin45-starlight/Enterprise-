@@ -8,10 +8,10 @@ export default function AboutPage() {
   const settings = useAdminStore((state) => state.settings);
 
   const team = [
-    { name: settings?.ceoName || 'Babatunde Funmilayo', title: 'CEO & Founder', seed: settings?.ceoSeed || 'babatunde' },
-    { name: settings?.chiefEditorName || '', title: 'Chief Editor', seed: settings?.chiefEditorSeed || 'sarah' },
-    { name: settings?.leadArchitectName || '', title: 'Lead Architect', seed: settings?.leadArchitectSeed || 'david' },
-    { name: settings?.headOfDesignName || '', title: 'Head of Design', seed: settings?.headOfDesignSeed || 'elena' },
+    { name: settings?.ceoName || 'Babatunde Funmilayo', title: 'CEO & Founder', seed: settings?.ceoSeed || 'babatunde', image: settings?.ceoImage },
+    { name: settings?.chiefEditorName || '', title: 'Chief Editor', seed: settings?.chiefEditorSeed || 'sarah', image: settings?.chiefEditorImage },
+    { name: settings?.leadArchitectName || '', title: 'Lead Architect', seed: settings?.leadArchitectSeed || 'david', image: settings?.leadArchitectImage },
+    { name: settings?.headOfDesignName || '', title: 'Head of Design', seed: settings?.headOfDesignSeed || 'elena', image: settings?.headOfDesignImage },
   ].filter(member => member.name && member.name.trim() !== '');
 
   return (
@@ -50,7 +50,13 @@ export default function AboutPage() {
             {team.map(member => (
               <div key={member.name} className="glass p-6 rounded-2xl flex flex-col items-center w-full max-w-[280px] border border-white/40 dark:border-slate-800/40">
                 <div className="w-32 h-32 rounded-full overflow-hidden relative mb-4 shadow-md bg-slate-100 dark:bg-slate-800">
-                   <Image src={`https://picsum.photos/seed/${member.seed}/300/300`} alt={member.name} fill className="object-cover" referrerPolicy="no-referrer" />
+                   <Image 
+                     src={member.image && member.image.trim() !== '' ? member.image : `https://picsum.photos/seed/${member.seed}/300/300`} 
+                     alt={member.name} 
+                     fill 
+                     className="object-cover" 
+                     referrerPolicy="no-referrer" 
+                   />
                 </div>
                 <h3 className="font-bold text-lg text-slate-900 dark:text-white">{member.name}</h3>
                 <p className="text-primary-600 dark:text-primary-400 text-sm font-semibold mt-1">{member.title}</p>
