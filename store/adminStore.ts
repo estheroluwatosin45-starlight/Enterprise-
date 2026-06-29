@@ -146,6 +146,14 @@ export interface Notification {
   postId?: string;
 }
 
+export interface Follower {
+  id: string;
+  name: string;
+  email: string;
+  password?: string;
+  bookmarks: string[];
+}
+
 interface AdminState {
   posts: Post[];
   users: User[];
@@ -180,6 +188,12 @@ interface AdminState {
   addNotification: (notification: Omit<Notification, 'id' | 'date' | 'read'>) => void;
   markNotificationRead: (id: string) => void;
   clearAllNotifications: () => void;
+  followers: Follower[];
+  currentFollower: Follower | null;
+  signupFollower: (name: string, email: string, password?: string) => { success: boolean; error?: string };
+  loginFollower: (email: string, password?: string) => boolean;
+  logoutFollower: () => void;
+  toggleBookmark: (postId: string) => void;
   isInitialized: boolean;
   initializeStore: () => Promise<void>;
 }
@@ -239,6 +253,8 @@ export const useAdminStore = create<AdminState>()((set) => ({
   currentUserRole: 'Super Admin',
   settings: initialData.settings,
   notifications: initialData.notifications,
+  followers: [],
+  currentFollower: null,
   isInitialized: false,
 
       addPost: (post) => set((state) => ({
@@ -351,9 +367,55 @@ export const useAdminStore = create<AdminState>()((set) => ({
         notifications: (state.notifications || []).map(n => n.id === id ? { ...n, read: true } : n)
       })),
       clearAllNotifications: () => set({ notifications: [] }),
+      signupFollower: (name, email, password) => {
+        const state = useAdminStore.getState();
+        const exists = state.followers.some(f => f.email.toLowerCase() === email.toLowerCase());
+        if (exists) {
+          return { success: false, error: 'Email already registered.' };
+        }
+        const newFollower = {
+          id: Math.random().toString(36).substr(2, 9),
+          name,
+          email,
+          password,
+          bookmarks: []
+        };
+        set((state) => ({
+          followers: [...state.followers, newFollower],
+          currentFollower: newFollower
+        }));
+        return { success: true };
+      },
+      loginFollower: (email, password) => {
+        const state = useAdminStore.getState();
+        const follower = state.followers.find(
+          f => f.email.toLowerCase() === email.toLowerCase() && f.password === password
+        );
+        if (follower) {
+          set({ currentFollower: follower });
+          return true;
+        }
+        return false;
+      },
+      logoutFollower: () => set({ currentFollower: null }),
+      toggleBookmark: (postId) => set((state) => {
+        if (!state.currentFollower) return {};
+        const bookmarks = state.currentFollower.bookmarks.includes(postId)
+          ? state.currentFollower.bookmarks.filter(id => id !== postId)
+          : [...state.currentFollower.bookmarks, postId];
+        const updatedFollower = { ...state.currentFollower, bookmarks };
+        const followers = state.followers.map(f => f.id === state.currentFollower?.id ? updatedFollower : f);
+        return {
+          currentFollower: updatedFollower,
+          followers
+        };
+      }),
       initializeStore: async () => {
         try {
           let posts, categories, comments, users, settings, notifications, media;
+
+          let followers = [];
+          let currentFollower = null;
 
           if (supabase) {
             posts = await loadFromSupabase('cms_posts', initialData.posts);
@@ -363,6 +425,7 @@ export const useAdminStore = create<AdminState>()((set) => ({
             settings = await loadFromSupabase('cms_settings', initialData.settings);
             notifications = await loadFromSupabase('cms_notifications', initialData.notifications);
             media = await loadFromSupabase('cms_media', initialData.media);
+            followers = await loadFromSupabase('cms_followers', []);
 
             // Subscribe to real-time changes on the settings table
             supabase
@@ -407,6 +470,17 @@ export const useAdminStore = create<AdminState>()((set) => ({
                       if (JSON.stringify(currentState.media) !== JSON.stringify(updatedRow.value)) {
                         set({ media: updatedRow.value });
                       }
+                    } else if (updatedRow.key === 'cms_followers') {
+                      if (JSON.stringify(currentState.followers) !== JSON.stringify(updatedRow.value)) {
+                        let newCurrent = currentState.currentFollower;
+                        if (currentState.currentFollower) {
+                          const updatedSelf = updatedRow.value.find((f: any) => f.id === currentState.currentFollower?.id);
+                          if (updatedSelf) {
+                            newCurrent = updatedSelf;
+                          }
+                        }
+                        set({ followers: updatedRow.value, currentFollower: newCurrent });
+                      }
                     }
                   }
                 }
@@ -420,6 +494,11 @@ export const useAdminStore = create<AdminState>()((set) => ({
             settings = loadFromLocalStorage('cms_settings', initialData.settings);
             notifications = loadFromLocalStorage('cms_notifications', initialData.notifications);
             media = loadFromLocalStorage('cms_media', initialData.media);
+            followers = loadFromLocalStorage('cms_followers', []);
+          }
+
+          if (typeof window !== 'undefined') {
+            currentFollower = loadFromLocalStorage('cms_current_follower', null);
           }
 
           set({
@@ -430,6 +509,8 @@ export const useAdminStore = create<AdminState>()((set) => ({
             settings,
             notifications,
             media,
+            followers,
+            currentFollower,
             isInitialized: true,
           });
         } catch (err) {
@@ -447,6 +528,8 @@ if (typeof window !== 'undefined') {
   let prevSettings = useAdminStore.getState().settings;
   let prevNotifications = useAdminStore.getState().notifications;
   let prevMedia = useAdminStore.getState().media;
+  let prevFollowers = useAdminStore.getState().followers;
+  let prevCurrentFollower = useAdminStore.getState().currentFollower;
 
   useAdminStore.subscribe((state) => {
     if (!state.isInitialized) {
@@ -458,6 +541,8 @@ if (typeof window !== 'undefined') {
       prevSettings = state.settings;
       prevNotifications = state.notifications;
       prevMedia = state.media;
+      prevFollowers = state.followers;
+      prevCurrentFollower = state.currentFollower;
       return;
     }
 
@@ -496,6 +581,14 @@ if (typeof window !== 'undefined') {
     if (state.media !== prevMedia) {
       prevMedia = state.media;
       save('cms_media', state.media);
+    }
+    if (state.followers !== prevFollowers) {
+      prevFollowers = state.followers;
+      save('cms_followers', state.followers);
+    }
+    if (state.currentFollower !== prevCurrentFollower) {
+      prevCurrentFollower = state.currentFollower;
+      saveToLocalStorage('cms_current_follower', state.currentFollower);
     }
   });
 }

@@ -12,6 +12,8 @@ export default function Navbar() {
   const router = useRouter();
   const isAuthenticated = useAdminStore((state) => state.isAuthenticated);
   const logout = useAdminStore((state) => state.logout);
+  const currentFollower = useAdminStore((state) => state.currentFollower);
+  const logoutFollower = useAdminStore((state) => state.logoutFollower);
   const [mounted, setMounted] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [navbarSearchQuery, setNavbarSearchQuery] = useState('');
@@ -79,6 +81,43 @@ export default function Navbar() {
                 </button>
               )}
               <ThemeToggle />
+
+              {/* Follower Auth Actions */}
+              {mounted && currentFollower ? (
+                <div className="flex items-center gap-4 border-l border-slate-200 dark:border-slate-800 pl-4 ml-1">
+                  <Link 
+                    href="/profile" 
+                    className="text-slate-650 dark:text-slate-350 hover:text-primary-600 dark:hover:text-primary-400 text-sm font-semibold flex items-center gap-1.5"
+                  >
+                    <User className="w-4 h-4 text-slate-400" />
+                    <span>Profile</span>
+                  </Link>
+                  <button 
+                    onClick={() => {
+                      logoutFollower();
+                      router.push('/');
+                    }}
+                    className="text-xs text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 font-semibold cursor-pointer"
+                  >
+                    Log Out
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-4 border-l border-slate-200 dark:border-slate-800 pl-4 ml-1">
+                  <Link 
+                    href="/login" 
+                    className="text-slate-650 dark:text-slate-350 hover:text-primary-600 dark:hover:text-primary-400 text-sm font-semibold transition-colors"
+                  >
+                    Log In
+                  </Link>
+                  <Link 
+                    href="/signup" 
+                    className="bg-primary-600 hover:bg-primary-700 text-white px-3.5 py-1.5 rounded-xl text-xs font-semibold shadow-sm transition-colors cursor-pointer"
+                  >
+                    Join
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
           <div className="-mr-2 flex items-center gap-2 md:hidden">
@@ -153,6 +192,48 @@ export default function Navbar() {
             >
               Contact
             </Link>
+
+            <div className="border-t border-slate-100 dark:border-slate-800/80 pt-2 mt-2 flex flex-col space-y-2">
+              {mounted && currentFollower ? (
+                <>
+                  <Link 
+                    href="/profile" 
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="text-slate-650 dark:text-slate-300 hover:text-primary-600 dark:hover:text-primary-400 py-2.5 px-3 rounded-xl text-sm font-bold hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all flex items-center gap-1.5"
+                  >
+                    <User className="w-4 h-4 text-slate-400" />
+                    Profile
+                  </Link>
+                  <button 
+                    onClick={() => {
+                      logoutFollower();
+                      setIsMobileMenuOpen(false);
+                      router.push('/');
+                    }}
+                    className="text-left text-red-650 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/15 py-2.5 px-3 rounded-xl text-sm font-bold transition-all w-full cursor-pointer"
+                  >
+                    Log Out
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link 
+                    href="/login" 
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="text-slate-650 dark:text-slate-300 hover:text-primary-600 dark:hover:text-primary-400 py-2.5 px-3 rounded-xl text-sm font-bold hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all"
+                  >
+                    Log In
+                  </Link>
+                  <Link 
+                    href="/signup" 
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="bg-primary-600 hover:bg-primary-700 text-white py-2.5 px-3 rounded-xl text-sm font-bold text-center transition-all shadow-sm"
+                  >
+                    Join
+                  </Link>
+                </>
+              )}
+            </div>
           </div>
         </div>
       )}

@@ -3,15 +3,18 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { use, useEffect } from 'react';
-import { Clock, ArrowLeft } from 'lucide-react';
+import { Clock, ArrowLeft, Bookmark } from 'lucide-react';
 import { useAdminStore } from '@/store/adminStore';
-import { notFound } from 'next/navigation';
+import { notFound, useRouter } from 'next/navigation';
 
 export default function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
+  const router = useRouter();
   const posts = useAdminStore((state) => state.posts);
   const post = posts.find((p) => p.id === slug);
   const updatePost = useAdminStore((state) => state.updatePost);
+  const currentFollower = useAdminStore((state) => state.currentFollower);
+  const toggleBookmark = useAdminStore((state) => state.toggleBookmark);
 
   useEffect(() => {
     if (post) {
@@ -24,6 +27,7 @@ export default function BlogPostPage({ params }: { params: Promise<{ slug: strin
   }
   
   const readTime = post.readTime || '5 min read';
+  const isBookmarked = currentFollower?.bookmarks?.includes(post.id) || false;
 
   return (
     <article className="w-full min-h-screen">
@@ -35,9 +39,24 @@ export default function BlogPostPage({ params }: { params: Promise<{ slug: strin
               <ArrowLeft className="w-4 h-4" /> Back to Articles
             </Link>
           </div>
-          <div className="mb-6 flex items-center justify-center gap-4 text-sm font-medium">
+          <div className="mb-6 flex flex-wrap items-center justify-center gap-4 text-sm font-medium">
             <span className="bg-primary-500/20 text-primary-300 px-3 py-1 rounded-full border border-primary-500/30">{post.category}</span>
             <span className="flex items-center gap-1 text-slate-300"><Clock className="w-4 h-4" /> {readTime}</span>
+            
+            <button
+              onClick={() => {
+                if (currentFollower) {
+                  toggleBookmark(post.id);
+                } else {
+                  router.push('/login');
+                }
+              }}
+              className="inline-flex items-center gap-1.5 px-3.5 py-1 bg-white/10 hover:bg-white/20 text-white rounded-full border border-white/20 transition-all cursor-pointer backdrop-blur-sm"
+              title={isBookmarked ? "Remove Bookmark" : "Bookmark Story"}
+            >
+              <Bookmark className={`w-3.5 h-3.5 ${isBookmarked ? 'text-primary-400 fill-primary-400' : 'text-slate-350'}`} />
+              <span className="text-xs font-semibold">{isBookmarked ? 'Bookmarked' : 'Bookmark'}</span>
+            </button>
           </div>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold tracking-tight mb-8">
             {post.title}
