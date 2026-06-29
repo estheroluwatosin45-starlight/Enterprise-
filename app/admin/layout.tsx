@@ -48,17 +48,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   
   useEffect(() => {
     setMounted(true);
-    let unsub: (() => void) | undefined;
-    if (useAdminStore.persist.hasHydrated()) {
-      setHydrated(true);
-    } else {
-      unsub = useAdminStore.persist.onFinishHydration(() => {
-        setHydrated(true);
-      });
-    }
-    return () => {
-      if (unsub) unsub();
-    };
+    setHydrated(true);
   }, []);
 
   useEffect(() => {

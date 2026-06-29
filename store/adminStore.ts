@@ -155,6 +155,7 @@ interface AdminState {
   addNotification: (notification: Omit<Notification, 'id' | 'date' | 'read'>) => void;
   markNotificationRead: (id: string) => void;
   clearAllNotifications: () => void;
+  isInitialized: boolean;
   initializeStore: () => Promise<void>;
 }
 
@@ -199,18 +200,17 @@ const getInitialState = () => {
 
 const initialData = getInitialState();
 
-export const useAdminStore = create<AdminState>()(
-  persist(
-    (set) => ({
-      posts: initialData.posts,
-      users: initialData.users,
-      categories: initialData.categories,
-      media: initialData.media,
-      comments: initialData.comments,
-      isAuthenticated: false,
-      currentUserRole: 'Super Admin',
-      settings: initialData.settings,
-      notifications: initialData.notifications,
+export const useAdminStore = create<AdminState>()((set) => ({
+  posts: initialData.posts,
+  users: initialData.users,
+  categories: initialData.categories,
+  media: initialData.media,
+  comments: initialData.comments,
+  isAuthenticated: false,
+  currentUserRole: 'Super Admin',
+  settings: initialData.settings,
+  notifications: initialData.notifications,
+  isInitialized: false,
 
       addPost: (post) => set((state) => ({
         posts: [
@@ -323,7 +323,10 @@ export const useAdminStore = create<AdminState>()(
       })),
       clearAllNotifications: () => set({ notifications: [] }),
       initializeStore: async () => {
-        if (!supabase) return;
+        if (!supabase) {
+          set({ isInitialized: true });
+          return;
+        }
         try {
           const posts = await loadFromSupabase('cms_posts', initialData.posts);
           const categories = await loadFromSupabase('cms_categories', initialData.categories);
@@ -341,21 +344,14 @@ export const useAdminStore = create<AdminState>()(
             settings,
             notifications,
             media,
+            isInitialized: true,
           });
         } catch (err) {
           console.error('Failed to initialize Supabase store:', err);
+          set({ isInitialized: true });
         }
       },
-    }),
-    {
-      name: 'enterprise-cms-storage-v4',
-      partialize: (state) => {
-        const { isAuthenticated, ...rest } = state;
-        return rest;
-      },
-    }
-  )
-);
+    }));
 
 if (typeof window !== 'undefined') {
   let prevPosts = useAdminStore.getState().posts;
@@ -367,6 +363,18 @@ if (typeof window !== 'undefined') {
   let prevMedia = useAdminStore.getState().media;
 
   useAdminStore.subscribe((state) => {
+    if (!state.isInitialized) {
+      // Keep previous references synchronized during the loading phase
+      prevPosts = state.posts;
+      prevCategories = state.categories;
+      prevComments = state.comments;
+      prevUsers = state.users;
+      prevSettings = state.settings;
+      prevNotifications = state.notifications;
+      prevMedia = state.media;
+      return;
+    }
+
     if (state.posts !== prevPosts) {
       prevPosts = state.posts;
       saveToSupabase('cms_posts', state.posts);
