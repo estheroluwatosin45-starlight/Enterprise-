@@ -380,9 +380,20 @@ export const useAdminStore = create<AdminState>()((set) => ({
           password,
           bookmarks: []
         };
+
+        const newNotification = {
+          id: Math.random().toString(36).substr(2, 9),
+          type: 'new_follower',
+          title: 'New Follower Joined',
+          message: `${name} (${email}) has joined your website as a follower!`,
+          date: new Date().toISOString(),
+          read: false
+        };
+
         set((state) => ({
           followers: [...state.followers, newFollower],
-          currentFollower: newFollower
+          currentFollower: newFollower,
+          notifications: [newNotification, ...(state.notifications || [])]
         }));
         return { success: true };
       },
