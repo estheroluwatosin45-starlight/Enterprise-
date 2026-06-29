@@ -44,6 +44,27 @@ const saveToSupabase = async (key: string, value: any) => {
   }
 };
 
+// LocalStorage fallback helpers
+const loadFromLocalStorage = (key: string, defaultValue: any) => {
+  if (typeof window === 'undefined') return defaultValue;
+  try {
+    const item = window.localStorage.getItem(key);
+    return item ? JSON.parse(item) : defaultValue;
+  } catch (err) {
+    console.warn(`Local storage load error for ${key}:`, err);
+    return defaultValue;
+  }
+};
+
+const saveToLocalStorage = (key: string, value: any) => {
+  if (typeof window === 'undefined') return;
+  try {
+    window.localStorage.setItem(key, JSON.stringify(value));
+  } catch (err) {
+    console.warn(`Local storage save error for ${key}:`, err);
+  }
+};
+
 export interface Post {
   id: string;
   title: string;
@@ -323,18 +344,26 @@ export const useAdminStore = create<AdminState>()((set) => ({
       })),
       clearAllNotifications: () => set({ notifications: [] }),
       initializeStore: async () => {
-        if (!supabase) {
-          set({ isInitialized: true });
-          return;
-        }
         try {
-          const posts = await loadFromSupabase('cms_posts', initialData.posts);
-          const categories = await loadFromSupabase('cms_categories', initialData.categories);
-          const comments = await loadFromSupabase('cms_comments', initialData.comments);
-          const users = await loadFromSupabase('cms_users', initialData.users);
-          const settings = await loadFromSupabase('cms_settings', initialData.settings);
-          const notifications = await loadFromSupabase('cms_notifications', initialData.notifications);
-          const media = await loadFromSupabase('cms_media', initialData.media);
+          let posts, categories, comments, users, settings, notifications, media;
+
+          if (supabase) {
+            posts = await loadFromSupabase('cms_posts', initialData.posts);
+            categories = await loadFromSupabase('cms_categories', initialData.categories);
+            comments = await loadFromSupabase('cms_comments', initialData.comments);
+            users = await loadFromSupabase('cms_users', initialData.users);
+            settings = await loadFromSupabase('cms_settings', initialData.settings);
+            notifications = await loadFromSupabase('cms_notifications', initialData.notifications);
+            media = await loadFromSupabase('cms_media', initialData.media);
+          } else {
+            posts = loadFromLocalStorage('cms_posts', initialData.posts);
+            categories = loadFromLocalStorage('cms_categories', initialData.categories);
+            comments = loadFromLocalStorage('cms_comments', initialData.comments);
+            users = loadFromLocalStorage('cms_users', initialData.users);
+            settings = loadFromLocalStorage('cms_settings', initialData.settings);
+            notifications = loadFromLocalStorage('cms_notifications', initialData.notifications);
+            media = loadFromLocalStorage('cms_media', initialData.media);
+          }
 
           set({
             posts,
@@ -347,7 +376,7 @@ export const useAdminStore = create<AdminState>()((set) => ({
             isInitialized: true,
           });
         } catch (err) {
-          console.error('Failed to initialize Supabase store:', err);
+          console.error('Failed to initialize store:', err);
           set({ isInitialized: true });
         }
       },
@@ -375,33 +404,41 @@ if (typeof window !== 'undefined') {
       return;
     }
 
+    const save = (key: string, value: any) => {
+      if (supabase) {
+        saveToSupabase(key, value);
+      } else {
+        saveToLocalStorage(key, value);
+      }
+    };
+
     if (state.posts !== prevPosts) {
       prevPosts = state.posts;
-      saveToSupabase('cms_posts', state.posts);
+      save('cms_posts', state.posts);
     }
     if (state.categories !== prevCategories) {
       prevCategories = state.categories;
-      saveToSupabase('cms_categories', state.categories);
+      save('cms_categories', state.categories);
     }
     if (state.comments !== prevComments) {
       prevComments = state.comments;
-      saveToSupabase('cms_comments', state.comments);
+      save('cms_comments', state.comments);
     }
     if (state.users !== prevUsers) {
       prevUsers = state.users;
-      saveToSupabase('cms_users', state.users);
+      save('cms_users', state.users);
     }
     if (state.settings !== prevSettings) {
       prevSettings = state.settings;
-      saveToSupabase('cms_settings', state.settings);
+      save('cms_settings', state.settings);
     }
     if (state.notifications !== prevNotifications) {
       prevNotifications = state.notifications;
-      saveToSupabase('cms_notifications', state.notifications);
+      save('cms_notifications', state.notifications);
     }
     if (state.media !== prevMedia) {
       prevMedia = state.media;
-      saveToSupabase('cms_media', state.media);
+      save('cms_media', state.media);
     }
   });
 }
