@@ -26,14 +26,14 @@ export default function AboutPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
           <div>
-            <h2 className="text-3xl font-display font-bold text-slate-900 mb-6">Who We Are</h2>
-            <p className="text-lg text-slate-600 mb-4">
+            <h2 className="text-3xl font-display font-bold text-slate-900 dark:text-white mb-6">Who We Are</h2>
+            <p className="text-lg text-slate-600 dark:text-slate-300 mb-4">
               Enterprise CMS was born out of frustration with legacy platforms that were either too complex to use, or too rigid to customize. We wanted a system that developers love building with, and editors love writing in.
             </p>
-            <p className="text-lg text-slate-600 mb-6">
+            <p className="text-lg text-slate-600 dark:text-slate-300 mb-6">
               Today, our platform serves millions of page views daily, powered by Next.js and Supabase, providing a seamless edge network experience globally.
             </p>
-            <Link href="/contact" className="text-primary-600 font-semibold hover:text-primary-700 text-lg">
+            <Link href="/contact" className="text-primary-600 dark:text-primary-400 font-semibold hover:text-primary-700 dark:hover:text-primary-300 text-lg">
               Get in touch with us &rarr;
             </Link>
           </div>
@@ -43,17 +43,17 @@ export default function AboutPage() {
         </div>
       </div>
       
-      <div className="bg-slate-50 py-20 border-t border-slate-200">
+      <div className="bg-slate-50 dark:bg-slate-900/40 py-20 border-t border-slate-200 dark:border-slate-800/60">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-display font-bold text-slate-900 mb-12">Meet the Leadership</h2>
+          <h2 className="text-3xl font-display font-bold text-slate-900 dark:text-white mb-12">Meet the Leadership</h2>
           <div className="flex flex-wrap justify-center gap-8">
             {team.map(member => (
               <div key={member.name} className="glass p-6 rounded-2xl flex flex-col items-center w-full max-w-[280px] border border-white/40 dark:border-slate-800/40">
-                <div className="w-32 h-32 rounded-full overflow-hidden relative mb-4 shadow-md bg-slate-100">
+                <div className="w-32 h-32 rounded-full overflow-hidden relative mb-4 shadow-md bg-slate-100 dark:bg-slate-800">
                    <Image src={`https://picsum.photos/seed/${member.seed}/300/300`} alt={member.name} fill className="object-cover" referrerPolicy="no-referrer" />
                 </div>
-                <h3 className="font-bold text-lg text-slate-900">{member.name}</h3>
-                <p className="text-primary-600 text-sm font-semibold mt-1">{member.title}</p>
+                <h3 className="font-bold text-lg text-slate-900 dark:text-white">{member.name}</h3>
+                <p className="text-primary-600 dark:text-primary-400 text-sm font-semibold mt-1">{member.title}</p>
               </div>
             ))}
           </div>

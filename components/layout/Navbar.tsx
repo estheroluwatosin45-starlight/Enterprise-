@@ -6,6 +6,7 @@ import { Logo } from '@/components/ui/Logo';
 import { useAdminStore } from '@/store/adminStore';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 export default function Navbar() {
   const router = useRouter();
@@ -39,7 +40,7 @@ export default function Navbar() {
             <Link href="/blog" className="text-slate-650 hover:text-primary-600 px-3 py-2 text-sm font-semibold transition-colors">Articles</Link>
             <Link href="/about" className="text-slate-650 hover:text-primary-600 px-3 py-2 text-sm font-semibold transition-colors">About</Link>
             <Link href="/contact" className="text-slate-650 hover:text-primary-600 px-3 py-2 text-sm font-semibold transition-colors">Contact</Link>
-            <div className="flex items-center gap-3 ml-4 pl-4 border-l border-slate-200 relative">
+            <div className="flex items-center gap-3 ml-4 pl-4 border-l border-slate-200 dark:border-slate-800 relative">
               {isSearchVisible ? (
                 <form 
                   onSubmit={(e) => {
@@ -77,9 +78,11 @@ export default function Navbar() {
                   <Search className="w-5 h-5" />
                 </button>
               )}
+              <ThemeToggle />
             </div>
           </div>
-          <div className="-mr-2 flex items-center md:hidden">
+          <div className="-mr-2 flex items-center gap-2 md:hidden">
+            <ThemeToggle />
             <button 
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="inline-flex items-center justify-center p-2 rounded-full text-slate-400 hover:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none transition-colors"
